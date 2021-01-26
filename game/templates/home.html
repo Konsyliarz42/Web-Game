@@ -1,7 +1,18 @@
 {% extends "index.html" %}
+{% from "render_field.html" import render_field %}
+
+{% block title %} Strona główna {% endblock %}
 
 {% block content %}
+    <h1 class="display-4">Test</h1>
 
-    <h4 class="display-4">Test</h4>
-
+    <div class="containter p-4 m-4 border" style="width: 512px">
+        <form method="POST" action="/home">
+            <dl>
+                {{ wtf.quick_form(form) }}
+                <input class="btn btn-primary btn-block" type="submit" value="Wyślij">
+            </dl>
+        </form>
+    </div>
+    
 {% endblock %}

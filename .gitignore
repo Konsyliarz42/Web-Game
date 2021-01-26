@@ -1,3 +1,7 @@
 venv/
+.vscode/
 instance/
 __pycache__/
+
+*.xlsx
+*.db
