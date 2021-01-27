@@ -1,5 +1,5 @@
 import os
-from flask import Flask, make_response, render_template
+from flask import Flask, make_response, render_template, request
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 
@@ -16,9 +16,10 @@ models.db.init_app(app)
 models.db.create_all(app=app)
 
 login_manager = LoginManager()
+login_manager.init_app(app)
 
 Bootstrap(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return models.User.get(user_id)
+    return models.User.query.get(user_id)
