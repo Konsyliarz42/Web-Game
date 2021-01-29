@@ -1,6 +1,6 @@
 from flask_restx import Api, Resource
 from flask_login import login_user, logout_user, current_user, login_required
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from . import make_response, render_template, request
 
 from .forms import RegisterForm, LoginForm
