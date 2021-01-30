@@ -1,3 +1,4 @@
+from datetime import date
 from flask_restx import Api, Resource
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash
@@ -13,6 +14,7 @@ def get_user():
         return {
             'id': current_user.id,
             'nick': current_user.nick,
+            'email': current_user.email
         }
 
 @api.route('/home')
@@ -38,7 +40,8 @@ class Home(Resource):
             user = User(
                 email = rform.email.data,
                 password = generate_password_hash(rform.password.data, 'sha256'),
-                nick = rform.nick.data
+                nick = rform.nick.data,
+                created = date.today()
             )
 
             db.session.add(user)

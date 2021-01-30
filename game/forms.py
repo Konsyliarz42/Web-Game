@@ -5,6 +5,8 @@ from werkzeug.security import check_password_hash
 
 from .models import User
 
+REQUIRED_MASSAGE = "To pole jest wymagane."
+
 class Check_password(object):
 
     def __init__(self, email_field, message=None):
@@ -30,33 +32,33 @@ class RegisterForm(FlaskForm):
     email = StringField('E-mail', validators=[
         Email(message="Nieprawidłowy adres e-mail."),
         email_unique,
-        DataRequired()
+        DataRequired(message=REQUIRED_MASSAGE)
     ])
 
     password = PasswordField('Hasło', validators=[
         Length(min=8, message="Hasło musi zawierać minimum 8 znaków."),
-        DataRequired()
+        DataRequired(message=REQUIRED_MASSAGE)
     ])
 
     cpassword = PasswordField('Powtórz hasło', validators=[
         EqualTo('password', message="Musisz podać dwa takie same hasła."),
-        DataRequired()
+        DataRequired(message=REQUIRED_MASSAGE)
     ])
 
     nick = StringField('Nick', validators=[
         Length(min=3, message="Nick musi zawierać minimum 3 znaki."),
-        DataRequired()
+        DataRequired(message=REQUIRED_MASSAGE)
     ])
 
 
 class LoginForm(FlaskForm):
     email = StringField('E-mail', validators=[
         Email(message="Nieprawidłowy adres e-mail."),
-        DataRequired()
+        DataRequired(message=REQUIRED_MASSAGE)
     ])
 
     password = PasswordField('Hasło', validators=[
         Length(min=8, message="Hasło musi zawierać minimum 8 znaków."),
         Check_password(email_field='email'),
-        DataRequired()
+        DataRequired(message=REQUIRED_MASSAGE)
     ])

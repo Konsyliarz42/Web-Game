@@ -4,20 +4,45 @@
 {% block title %} Strona główna {% endblock %}
 
 {% block content %}
-    <h1 class="display-1">Test</h1>
 
-    <div class="containter p-4 m-4 border" style="width: 512px">
-        <form method="POST" action="/home">
-            <dl>
-                <h1 class="display-4 text-center">Rejestracja</h3>
-                {{ registerform.hidden_tag() }}
-                {{ wtf.quick_form(registerform) }}
-                <input class="btn btn-primary btn-block" type="submit" value="Zarejestruj">
-            </dl>
-        </form>
+<div class="sticky-top">
+
+    <!-- Hide navbar content-->
+    <div class="collapse" id="navbarToggle">
+        <div class="bg-dark text-white p-1">
+            
+            <div class="container-fluid">
+                <button class="btn text-white float-right" data-toggle="collapse" data-target="#navbarToggle"><strong>X</strong></button>
+            </div>
+
+            <div class="container-fluid p-3">
+                <dl>
+                    <h3>Nick: {{ user.nick }}</h3>
+                    <p>E-mail: {{ user.email }}</p>
+                    <p>ID: {{ user.id }}</p>
+                    <a href="/home?logout=True" class="btn btn-primary">Wyloguj</a>
+                </dl>
+            </div>
+
+        </div>
     </div>
 
-    <div class="containter p-4 m-4 border" style="width: 512px">
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark">
+    {% if user %}
+        <button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-expanded="false">
+            <span>Moje konto</span>
+        </button>
+    {% endif %}
+    </nav>
+
+</div>
+
+{% if not user %}
+<div class="d-inline-flex">
+
+    <!-- Login form -->
+    <div class="align-self-start p-4 m-4 border" style="width: 512px">
         <form method="POST" action="/home">
             <dl>
                 <h1 class="display-4 text-center">Login</h3>
@@ -28,11 +53,19 @@
         </form>
     </div>
 
-    {% if user %}
-    <div class="containter shadow mx-4 py-4 text-center" style="width: 512px">
-        <p>Zalogowano jako: {{ user.nick }} | id: {{ user.id }}</p>
-        <a href="/home?logout=True" class="btn btn-primary btn-block">Wyloguj</a>
+    <!-- Register form -->
+    <div class="p-4 m-4 border" style="width: 512px">
+        <form method="POST" action="/home">
+            <dl>
+                <h1 class="display-4 text-center">Rejestracja</h3>
+                {{ registerform.hidden_tag() }}
+                {{ wtf.quick_form(registerform) }}
+                <input class="btn btn-primary btn-block" type="submit" value="Zarejestruj">
+            </dl>
+        </form>
     </div>
-    {% endif %}
-    
+
+</div>
+{% endif %}
+
 {% endblock %}
