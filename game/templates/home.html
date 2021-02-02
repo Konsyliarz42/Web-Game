@@ -4,39 +4,7 @@
 {% block title %} Strona główna {% endblock %}
 
 {% block content %}
-
-<div class="sticky-top">
-
-    <!-- Hide navbar content-->
-    <div class="collapse" id="navbarToggle">
-        <div class="bg-dark text-white p-1">
-            
-            <div class="container-fluid">
-                <button class="btn text-white float-right" data-toggle="collapse" data-target="#navbarToggle"><strong>X</strong></button>
-            </div>
-
-            <div class="container-fluid p-3">
-                <dl>
-                    <h3>Nick: {{ user.nick }}</h3>
-                    <p>E-mail: {{ user.email }}</p>
-                    <p>ID: {{ user.id }}</p>
-                    <a href="/home?logout=True" class="btn btn-primary">Wyloguj</a>
-                </dl>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark">
-    {% if user %}
-        <button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-expanded="false">
-            <span>Moje konto</span>
-        </button>
-    {% endif %}
-    </nav>
-
-</div>
+{{ super() }}
 
 {% if not user %}
 <div class="d-inline-flex">
@@ -45,7 +13,7 @@
     <div class="align-self-start p-4 m-4 border" style="width: 512px">
         <form method="POST" action="/home">
             <dl>
-                <h1 class="display-4 text-center">Login</h3>
+                <h3 class="display-4 text-center">Logowanie</h3>
                 {{ loginform.hidden_tag() }}
                 {{ wtf.quick_form(loginform) }}
                 <input class="btn btn-primary btn-block" type="submit" value="Zaloguj">
@@ -57,7 +25,7 @@
     <div class="p-4 m-4 border" style="width: 512px">
         <form method="POST" action="/home">
             <dl>
-                <h1 class="display-4 text-center">Rejestracja</h3>
+                <h3 class="display-4 text-center">Rejestracja</h3>
                 {{ registerform.hidden_tag() }}
                 {{ wtf.quick_form(registerform) }}
                 <input class="btn btn-primary btn-block" type="submit" value="Zarejestruj">

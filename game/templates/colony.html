@@ -1,0 +1,14 @@
+{% extends "index.html" %}
+{% from "_render_field.html" import render_field %}
+
+{% block title %} {{ colony.name }} {% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<div>
+    {{ colony.rescuers }}
+    {{ colony.buildings }}
+</div>
+
+{% endblock %}

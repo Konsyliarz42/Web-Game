@@ -1,0 +1,58 @@
+{% extends "index.html" %}
+{% from "_render_field.html" import render_field %}
+
+{% block title %} Nazwa gry {% endblock %}
+
+{% block content %}
+{{ super() }}
+<div class="d-inline-flex">
+
+    <!-- New colony form -->
+    {% if not colonies %}
+    <div class="align-self-start p-4 m-4 border" style="width: 512px">
+        <form method="POST" action="/game">
+            <dl>
+                <h3 class="display-4 text-center">Nowa kolonia</h3>
+                {{ colonyform.hidden_tag() }}
+                {{ wtf.quick_form(colonyform) }}
+                <input class="btn btn-primary btn-block" type="submit" value="Załóż">
+            </dl>
+        </form>
+    </div>
+
+    <!-- Colonies' cards -->
+    {% else %}
+    <div class="align-self-start p-4 m-4 border">
+
+        <h3 class="display-4 text-center mb-4">Moje kolonie</h3>
+
+        <div class="row row-cols-1 row-cols-md-3 card-deck no-gutters">
+            {% for colony in colonies %}
+            <div class="col card shadow-sm" style="min-width: 256px">
+                <h4 class="card-header">{{ colony.name }}</h4>
+
+                <dl class="card-body mb-0">
+                    <strong>Władca: </strong>{{ colony.owner }}<br>
+                    <strong>Założono: </strong> {{ colony.created }} ({{ colony.created_days }} dni temu)<br>
+                
+                    <dl>
+                        <strong>Położenie: </strong>
+                        X = {{ colony.position.x }}
+                        Y = {{ colony.position.y }}
+                    </dl>
+
+                    <a class="btn btn-primary btn-block" href="/game/colonies/{{ colony.id }}">Zarządzaj</a>
+                </dl>
+
+                <small class="card-footer py-0 text-muted text-right">ID: {{ colony.id }}</small>
+            </div>
+            {% endfor %}
+        </div>
+        
+    </div>
+    {% endif %}
+
+
+
+</div>
+{% endblock %}

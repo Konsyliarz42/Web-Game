@@ -1,9 +1,12 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+
+
 {% block html_attribs %}
     lang="pl"
     style="font-size:13px"
 {% endblock %}
+
 
 {% block metas %}
     <meta charset="utf-8">
@@ -11,14 +14,75 @@
     {{ super() }}
 {% endblock %}
 
+
 {% block styles %}
     {{ super() }}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 {% endblock %}
+
 
 {% block scripts %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+<div class="sticky-top">
+
+    <!-- Hide navbar content-->
+    <div class="collapse" id="navbarToggle">
+        <div class="bg-dark text-white p-1">
+
+            <!-- Close button -->
+            <div class="container-fluid">
+                <button class="btn text-white float-right" data-toggle="collapse" data-target="#navbarToggle"><strong>X</strong></button>
+            </div>
+
+            <!-- Main content -->
+            <div class="container-fluid p-3">
+                <div class="d-flex">
+
+                    <dl class="mr-4">
+                        <h3 class="my-0"><strong>Nick: </strong>{{ user.nick }}</h3>
+                        <small><strong>ID: </strong>{{ user.id }}</small>
+                    </dl>
+                    
+                    <dl class="mr-4">
+                        <p class="my-0"><strong>E-mail: </strong>{{ user.email }}</p>
+                        <p class="my-0"><strong>Dołączył dnia: </strong>{{ user.created }} ({{ user.created_days }} dni temu)</p>
+                    </dl>
+                    
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark navbar-expand-md bg-dark d-flex justify-content-start shadow-lg">
+
+        <!-- Title -->
+        <h3><a class="navbar-text text-white m-0 mr-4" href="/home">Nazwa gry</a></h3>
+
+        <!-- Main buttons -->
+        <div class="btn-group">
+            <a class="btn btn-primary" href="/game">test</a>
+        </div>
+
+        <!-- User buttons -->
+        {% if user %}
+        <div class="btn-group ml-auto" role="group">
+            <button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-expanded="false">
+                <span>Moje konto</span>
+            </button>
+            <a class="btn btn-outline-info" href="/home?logout=True">Wyloguj</a>
+        </div>
+        {% endif %}
+
+    </nav>
+
+</div>
 {% endblock %}

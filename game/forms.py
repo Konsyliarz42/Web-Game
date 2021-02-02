@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField, ValidationError
 from wtforms.validators import Email, DataRequired, Length, EqualTo
 from werkzeug.security import check_password_hash
 
-from .models import User
+from .models import User, Colony
 
 REQUIRED_MASSAGE = "To pole jest wymagane."
 
@@ -25,6 +25,11 @@ class Check_password(object):
 def email_unique(form, field):
     if User.query.filter_by(email=field.data).all():
         raise ValidationError("Podany e-mail został już zarejestrowany.")
+
+
+def colony_unique(form, field):
+    if Colony.query.filter_by(name=field.data).all():
+        raise ValidationError("Podana nazwa jest już zajęta.")
 
 #================================================================
 
@@ -60,5 +65,13 @@ class LoginForm(FlaskForm):
     password = PasswordField('Hasło', validators=[
         Length(min=8, message="Hasło musi zawierać minimum 8 znaków."),
         Check_password(email_field='email'),
+        DataRequired(message=REQUIRED_MASSAGE)
+    ])
+
+
+class NewColonyForm(FlaskForm):
+    name = StringField('Nazwa kolonii', validators=[
+        Length(min=3, message="Nazwa kolonii musi zawierać minimum 3 znaki."),
+        colony_unique,
         DataRequired(message=REQUIRED_MASSAGE)
     ])
