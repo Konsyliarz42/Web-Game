@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 
 from .models_columns import TextPickleType
+from .buildings.buildings import house
 
 db = SQLAlchemy()
 
@@ -26,7 +27,7 @@ class Colony(db.Model):
     position_x = db.Column(db.Integer, default=0)
     position_y = db.Column(db.Integer, default=0)
 
-    rescuers = db.Column(TextPickleType())
+    resources = db.Column(TextPickleType())
     buildings = db.Column(TextPickleType())
 
     def __repr__(self):
@@ -34,15 +35,14 @@ class Colony(db.Model):
 
 
     def starter_pack(self):
-        self.rescuers = {
+        self.resources = {
             # name: [in magazine, production per hour]
-            'gold': [100, 0.0],
-            'wood': [500, 0.0],
-            'stone': [500, 0.0],
-            'clay': [250, 0.0],
-            'food': [1000, 0.5],
+            'wood': [1000, 0.0],
+            'stone': [1000, 0.0],
+            'food': [1000, 0.5]
         }
 
         self.buildings = {
-            
+            # name: {keys: values}
+            'house': house(1)
         }

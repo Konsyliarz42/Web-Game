@@ -1,0 +1,14 @@
+{
+    "10": {
+        "build_conditions": {
+            "sawmill": 9,
+            "quarry": 8,
+            "ironworks": 7
+        }
+    },
+    "50": {
+        "build_conditions": {
+            "ironworks": 47
+        }
+    }
+}

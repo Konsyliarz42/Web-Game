@@ -7,6 +7,8 @@ from . import make_response, render_template, request, redirect, url_for
 from .forms import RegisterForm, LoginForm, NewColonyForm
 from .models import db, User, Colony
 
+from datetime import timedelta
+
 api = Api()
 
 def get_user():
@@ -123,6 +125,7 @@ class Game(Resource):
                 created = date.today()
             )
 
+            colony.starter_pack()
             db.session.add(colony)
             db.session.commit()
 
@@ -141,7 +144,10 @@ class Game(Resource):
 class ColonyPage(Resource):
 
     def get(self, colony_id):
-        colony = Colony.query.get(colony_id)
+        colony = Colony.query.filter_by(id=colony_id, owner=current_user.id).first()
+
+        if not colony:
+            return make_response("You not have permission to view this page!", 401)
 
         colony = {
             'id': colony.id,
@@ -155,6 +161,7 @@ class ColonyPage(Resource):
                 'y': colony.position_y
             },
 
+            'resources': colony.resources,
             'buildings': colony.buildings
         }
 

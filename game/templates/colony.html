@@ -7,8 +7,18 @@
 {{ super() }}
 
 <div>
-    {{ colony.rescuers }}
-    {{ colony.buildings }}
+    <p>
+        <h2>Zasoby:</h2>
+        {{ colony.resources }}
+    </p>
+    
+    <h2>Budynki:</h2>
+    {% for building in colony.buildings %}
+        <p>
+            <h3>{{ building }}</h3>
+            {{ colony.buildings[building] }}
+        </p>
+    {% endfor %}
 </div>
 
 {% endblock %}
