@@ -1,24 +1,19 @@
-{% extends "index.html" %}
-{% from "_render_field.html" import render_field %}
-
-{% block title %} {{ colony.name }} {% endblock %}
+{% extends "colony_base.html" %}
 
 {% block content %}
 {{ super() }}
 
-<div>
-    <p>
-        <h2>Zasoby:</h2>
-        {{ colony.resources }}
-    </p>
-    
-    <h2>Budynki:</h2>
-    {% for building in colony.buildings %}
-        <p>
-            <h3>{{ building }}</h3>
-            {{ colony.buildings[building] }}
-        </p>
-    {% endfor %}
+<div class="card">
+    <div class="card-header">
+         <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item"><a class="nav-link" href="/game">Powrót do listy kolonii</a></li>
+            <li class="nav-item"><a class="nav-link active">Główne</a></li>
+            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}/build">Budowanie</a></li>
+            <li class="nav-item"><a class="nav-link disabled" href="#">Produkcja</a></li>
+        </ul>
+    </div>
+
+    <div class="card-deck m-3">{{ create_card(colony.buildings, build=False)}}</div>
 </div>
 
 {% endblock %}

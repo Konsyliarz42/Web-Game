@@ -1,0 +1,24 @@
+{% extends "colony_base.html" %}
+
+{% block content %}
+{{ super() }}
+
+<div class="card" style="max-width: 1500px">
+    <div class="card-header">
+         <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item"><a class="nav-link" href="/game">Powrót do listy kolonii</a></li>
+            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}">Główne</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/game/colonies/{{ colony.id }}/build">Budowanie</a></li>
+            <li class="nav-item"><a class="nav-link disabled" href="#">Produkcja</a></li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <div class="col"></div>
+        <div class="col p-4">{{ create_card(buildings) }}</div>
+    </div>
+    
+
+</div>
+
+{% endblock %}

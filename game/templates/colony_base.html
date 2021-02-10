@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+{% from "_create_building_card.html" import create_card %}
+
+{% block title %} {{ colony.name }} {% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<ul class="nav float-right">
+
+    <!-- Show values of main resources -->
+    {% for r in colony.main_resources %}
+    <li class="px-4 border">
+        <strong>{{ r.capitalize() }}:</strong>
+
+        <!-- Yellow font if value is less than 100 or production is equal 0 -->
+        {% if 100 >= colony.main_resources[r][0] or colony.main_resources[r][1] == 0 %}
+            <p class="text-warning my-0">
+        <!-- Red font if value or production are less than 0 -->
+        {% elif 0 > colony.main_resources[r][0] or 0 > colony.main_resources[r][1] %}
+            <p class="text-danger my-0">
+        {% else %}
+            <P class="text-body my-0">
+        {% endif %}
+            {{ colony.main_resources[r][0] }} | {{ colony.main_resources[r][1] }}/h</p>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

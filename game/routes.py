@@ -4,49 +4,13 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash
 from . import make_response, render_template, request, redirect, url_for
 
+from .routes_functions import get_user, get_colonies, translate_keys, get_next_buildings
 from .forms import RegisterForm, LoginForm, NewColonyForm
 from .models import db, User, Colony
 
 from datetime import timedelta
 
 api = Api()
-
-def get_user():
-    """The functions returns dictionary with information about current user."""
-    
-    if current_user.is_authenticated:
-        return {
-            'id': current_user.id,
-            'nick': current_user.nick,
-            'email': current_user.email,
-            'created': current_user.created,
-            'created_days': (date.today() - current_user.created).days
-        }
-
-
-def get_colonies():
-    """The function returns dictionaries' list with information about user's colonies."""
-
-    if not current_user.is_authenticated:
-        return None
-
-    colonies = list()
-
-    for colony in Colony.query.filter_by(owner=current_user.id).all():
-        colonies.append({
-            'id': colony.id,
-            'owner': current_user.nick,
-            'name': colony.name,
-            'created': colony.created,
-            'created_days': (date.today() - colony.created).days,
-            'position': {
-                'x': colony.position_x,
-                'y': colony.position_y
-            }
-        })
-
-    return colonies
-
 
 @api.route('/home')
 class Home(Resource):
@@ -161,11 +125,45 @@ class ColonyPage(Resource):
                 'y': colony.position_y
             },
 
-            'resources': colony.resources,
-            'buildings': colony.buildings
+            'main_resources': translate_keys(colony.resources),
+            'buildings': translate_keys(colony.buildings)
         }
 
         return make_response(render_template('colony.html',
             user=get_user(),
             colony=colony
+        ), 200)
+
+
+@login_required
+@api.route('/game/colonies/<int:colony_id>/build')
+class ColonyBuild(Resource):
+
+    def get(self, colony_id):
+        colony = Colony.query.filter_by(id=colony_id, owner=current_user.id).first()
+
+        if not colony:
+            return make_response("You not have permission to view this page!", 401)
+
+        buildings = translate_keys(get_next_buildings(colony.buildings))
+
+        colony = {
+            'id': colony.id,
+            'owner': current_user.nick,
+            'name': colony.name,
+            'created': colony.created,
+            'created_days': (date.today() - colony.created).days,
+
+            'position': {
+                'x': colony.position_x,
+                'y': colony.position_y
+            },
+
+            'main_resources': translate_keys(colony.resources),
+        }
+
+        return make_response(render_template('colony_build.html',
+            user=get_user(),
+            colony=colony,
+            buildings=buildings
         ), 200)

@@ -1,0 +1,116 @@
+{% macro create_card(buildings, build=True) %}
+
+{% for b in buildings %}
+    <div class="accordion m-4" id="accordion">
+
+    {% if build %}
+        <div class="card shadow-sm" style="width: 768px;">
+    {% else %}
+        <div class="card shadow-sm" style="width: 512px;">
+    {% endif %}
+
+            <div class="d-flex">
+
+                <!-- Image of building -->
+                <img class="shadow rounded-right float-left" src="https://webkit.org/demos/srcset/image-src.png" width="192" height="192">
+
+                <div class="float-right flex-fill">
+
+                    <!-- Name and level-->
+                    <div class="card-header p-1" id="{{ buildings[b]['name'] }}_head">
+                        {% if build %}
+                            <button class="btn btn-block " type="button" data-toggle="collapse" data-target="#{{ buildings[b]['name'] }}_hide" aria-expanded="true" aria-controls="collapseOne">
+                                <h3 class="m-0">{{ buildings[b]['name'] }}</h3>
+                                <span class="float-right m-0 lead">Poziom: {{ buildings[b]['level'] }}</span>
+                            </button>
+                        {% else %}
+                            <div class="container">
+                                <h3 class="m-0">{{ buildings[b]['name'] }}</h3>
+                                <span class="float-right m-0 lead">Poziom: {{ buildings[b]['level'] }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="card-body py-1 px-2">
+                        <h5 class="card-title mb-0">Opis:</h5>
+                        <p class="card-text text-break">{{ buildings[b]['description'] }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hidden content -->
+            {% if build %}
+                <div id="{{ buildings[b]['name'] }}_hide" class="collapse px-4" aria-labelledby="{{ buildings[b]['name'] }}_head" data-parent="#accordion">
+                    <div class="card-body row">
+
+                        <!-- Build's cost -->
+                        <div class="col">
+                            <h5 class="card-title">Koszt budowy:</h5>
+                            {% for key in buildings[b]['build_cost'] %}
+                                <li class="card-text">
+                                    <strong>{{ key.capitalize() }}:</strong>
+                                    {{ buildings[b]['build_cost'][key] }}
+                                </li>
+                            {% endfor %}
+                        </div>
+    
+                        <!-- Build's conditions -->
+                        <div class="col">
+                            {% if buildings[b]['build_conditions'] %}
+                                <h5 class="card-title">Wymagnia:</h5>
+                                {% for key in buildings[b]['build_conditions'] %}
+                                    <li class="card-text">
+                                        <strong>{{ key.capitalize() }}:</strong>
+                                        {{ buildings[b]['build_conditions'][key] }}
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+    
+                        <!-- Production -->
+                        <dl class="col">
+                            <h5 class="card-title">Produkcja:</h5>
+                            {% for key in buildings[b]['production'] %}
+                                <li class="card-text">
+                                    <strong>{{ key.capitalize() }}:</strong>
+                                    {% if 0 >= buildings[b]['production'][key] %}
+                                        <span class="text-danger">{{ buildings[b]['production'][key] }}</span>
+                                    {% else %}
+                                        <span class="text-success">+{{ buildings[b]['production'][key] }}</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </dl>
+                    </div>
+
+                    <!-- Build's time and actions -->
+                    <div class="pb-4">
+                        <p class="lead mb-2"><strong>Czas budowy: </strong>{{ buildings[b]['build_time'] }}</p>
+
+                        {% if buildings[b]['level'] == 1 %}
+                            <a class="btn btn-block btn-outline-primary">Buduj</a>
+                        {% else %}
+                            <a class="btn btn-block btn-outline-info">Rozbuduj</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="card-footer row py-1">
+                    {% for key in buildings[b]['production'] %}
+                        <li class="col">
+                            <strong>{{ key.capitalize() }}:</strong>
+                            {% if 0 >= buildings[b]['production'][key] %}
+                                <span class="text-danger">{{ buildings[b]['production'][key] }}</span>
+                            {% else %}
+                                <span class="text-success">+{{ buildings[b]['production'][key] }}</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+
+{% endmacro %}

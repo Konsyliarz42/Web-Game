@@ -70,7 +70,7 @@ def house(level: int):
         'level': level,
         'name': "Dom",
         'description': "...",
-        'image': "home.jpg",
+        'image': "house.jpg",
         # Production per hour
         'production': {
             'food': -0.5*level - level
@@ -99,7 +99,7 @@ def sawmill(level: int):
         'image': "sawmill.jpg",
         # Production per hour
         'production': {
-            'food': -1.0*level - level,
+            'food': -0.7*level - level,
             'wood': 1.5*level - level
         },
         # Build
@@ -108,7 +108,7 @@ def sawmill(level: int):
             'stone': 100*level
         },
         'build_conditions': {
-            'home': level
+            'house': level
         }
     }
 
@@ -125,7 +125,7 @@ def quarry(level: int):
         'image': "quarry.jpg",
         # Production per hour
         'production': {
-            'food': -1.0*level - level,
+            'food': -0.7*level - level,
             'stone': 1.5*level - level
         },
         # Build
@@ -134,7 +134,7 @@ def quarry(level: int):
             'stone': 100*level
         },
         'build_conditions': {
-            'home': level
+            'house': level
         }
     }
 
@@ -159,7 +159,7 @@ def barracks(level: int):
             'stone': 200*level
         },
         'build_conditions': {
-            'home': level,
+            'house': level,
             'farm': level - 3
         }
     }
@@ -177,7 +177,7 @@ def magazine(level: int):
         'image': "magazine.jpg",
         # Production per hour
         'production': {
-            'food': 0.5*level - level,
+            'food': 0.2*level - level,
         },
         # Build
         'build_cost': {
@@ -185,7 +185,7 @@ def magazine(level: int):
             'stone': 200*level
         },
         'build_conditions': {
-            'home': level
+            'house': level
         }
     }
 
@@ -203,7 +203,7 @@ def farm(level: int):
         'image': "farm.jpg",
         # Production per hour
         'production': {
-            'food': 2.7*level,
+            'food': 2.9*level,
         },
         # Build
         'build_cost': {
@@ -211,8 +211,83 @@ def farm(level: int):
             'stone': 200*level
         },
         'build_conditions': {
-            'home': level + 1,
+            'house': level + 1,
             'magazine': level - 5
+        }
+    }
+
+    file_name = join(inspect.stack()[0][1], '..', inspect.stack()[0][3] + '_data.json')
+    return building_corrects(main_data, file_name)
+
+
+def windmill(level: int):
+    main_data = {
+        # Main
+        'level': level,
+        'name': "Młyn",
+        'description': "...",
+        'image': "windmill.jpg",
+        # Production per hour
+        'production': {
+            'food': 1.4*level,
+        },
+        # Build
+        'build_cost': {
+            'wood': 400*level,
+            'stone': 200*level
+        },
+        'build_conditions': {
+            'farm': level + 5,
+        }
+    }
+
+    file_name = join(inspect.stack()[0][1], '..', inspect.stack()[0][3] + '_data.json')
+    return building_corrects(main_data, file_name)
+
+
+def bakery(level: int):
+    main_data = {
+        # Main
+        'level': level,
+        'name': "Piekarnia",
+        'description': "...",
+        'image': "bakery.jpg",
+        # Production per hour
+        'production': {
+            'food': 3.2*level,
+        },
+        # Build
+        'build_cost': {
+            'wood': 200*level,
+            'stone': 300*level
+        },
+        'build_conditions': {
+            'windmill': level + 2,
+        }
+    }
+
+    file_name = join(inspect.stack()[0][1], '..', inspect.stack()[0][3] + '_data.json')
+    return building_corrects(main_data, file_name)
+
+
+def fishs_hut(level: int):
+    main_data = {
+        # Main
+        'level': level,
+        'name': "Rybak",
+        'description': "...",
+        'image': "fishs_hut.jpg",
+        # Production per hour
+        'production': {
+            'food': 0.5*level,
+        },
+        # Build
+        'build_cost': {
+            'wood': 100*level,
+            'stone': 40*level
+        },
+        'build_conditions': {
+            'house': level,
         }
     }
 
@@ -221,18 +296,3 @@ def farm(level: int):
 
 # A D V A N C E D   B U I L D I N G S
 # O T H E R   B U I L D I N G S
-
-# ===============================================================
-
-if __name__ == '__main__':
-    print(
-        house(1),
-        sawmill(1),
-        quarry(1),
-        barracks(1),
-        magazine(1),
-        farm(1),
-
-        # --------
-        sep='\n\n'
-    )
