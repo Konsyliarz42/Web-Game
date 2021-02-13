@@ -29,6 +29,7 @@ class Colony(db.Model):
 
     resources = db.Column(TextPickleType())
     buildings = db.Column(TextPickleType())
+    build_now = db.Column(TextPickleType())
 
     def __repr__(self):
         return f"<Colony: {self.name} | id: {self.id}>"

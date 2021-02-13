@@ -1,7 +1,7 @@
-from datetime import date
+from datetime import date, datetime
 from flask_login import current_user
 
-from .models import User, Colony
+from .models import db, User, Colony
 from .buildings.buildings import house, sawmill, quarry, magazine, barracks, farm, windmill, bakery, fishs_hut
 
 def get_user():
@@ -17,7 +17,7 @@ def get_user():
         }
 
 
-def get_colonies():
+def get_colonies(colony_id=None):
     """The function returns dictionaries' list with information about user's colonies."""
 
     if not current_user.is_authenticated:
@@ -26,7 +26,7 @@ def get_colonies():
     colonies = list()
 
     for colony in Colony.query.filter_by(owner=current_user.id).all():
-        colonies.append({
+        c = {
             'id': colony.id,
             'owner': current_user.nick,
             'name': colony.name,
@@ -35,8 +35,15 @@ def get_colonies():
             'position': {
                 'x': colony.position_x,
                 'y': colony.position_y
-            }
-        })
+            },
+            'build_now': colony.build_now
+        }
+
+        # Return colony with colony_id
+        if colony_id and c['id'] == colony_id:
+            return c
+
+        colonies.append(c)
 
     return colonies
 
@@ -70,8 +77,8 @@ def translate_keys(dictionary):
     return result
 
 
-def get_next_buildings(colony_buildings):
-    """The functions returns buildings which user can build."""
+def get_next_buildings(colony_buildings, colony_resources):
+    """The functions returns buildings which user can build or upgrade."""
 
     keys = ['house', 'sawmill', 'quarry', 'barracks', 'magazine', 'farm', 'windmill', 'bakery', 'fishs_hut']
 
@@ -92,4 +99,51 @@ def get_next_buildings(colony_buildings):
         'fishs_hut': fishs_hut(colony_buildings['fishs_hut']['level'] + 1)
     }
 
+    for b in buildings:
+        conditions = buildings[b]['build_conditions']
+        buildings[b]['build_allow'] = True
+
+        # Check build conditions
+        for c in conditions.keys():
+            if colony_buildings[c]['level'] < conditions[c]:
+                buildings[b]['build_allow'] = False
+                break
+
+        # Check build cost
+        if not buildings[b]['build_allow']:
+            cost = buildings[b]['build_cost']
+
+            for c in cost.keys():
+                if colony_resources[c][0] < cost[c]:
+                    buildings[b]['build_allow'] = False
+                    break
+
     return buildings
+
+
+def update_colony(colony_id):
+
+    colony = Colony.query.filter_by(id=colony_id).first()
+    delete_key = list()
+
+    # End build
+    for building in colony.build_now.keys():
+        b = colony.build_now[building]
+
+        print(b['build_end'])
+        if datetime.today() >= datetime.strptime(b['build_end'], u"%Y-%m-%d %X.%f"):
+            colony.buildings[building] = b
+            delete_key.append(building)
+        else:
+            break
+
+    for key in delete_key:
+        colony.build_now.pop(key)
+
+    # Save changes
+    Colony.query.filter_by(id=colony_id).update({
+        'resources': colony.resources,
+        'buildings': colony.buildings,
+        'build_now': colony.build_now
+    })
+    db.session.commit()

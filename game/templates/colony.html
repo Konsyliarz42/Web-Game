@@ -13,7 +13,58 @@
         </ul>
     </div>
 
-    <div class="card-deck m-3">{{ create_card(colony.buildings, build=False)}}</div>
+    <div class="row p-4">
+
+        <!-- Buildings -->
+        <div class="col-3 border">
+            {% for b in colony.buildings %}
+                <div class="card-group">
+                    
+                    <!-- Image of building -->
+                    <div class="card bg-secondary shadow-sm" style="max-width: 64px;">
+                        <img src="{{ colony.buildings[b]['image'] }}" alt="{{ colony.buildings[b]['image'] }}">
+                    </div>
+                    
+
+                    <div class="card shadow-sm">
+                        
+                        <!-- Head of card -->
+                        <div class="card-header shadow-sm py-0">
+
+                            <!-- Name and level of building -->
+                            <span class="lead pr-2" style="font-size: 2rem;">
+                                <strong>{{ colony.buildings[b]['name'] }}</strong>
+                            </span>
+                            <span class="float-right lead mb-0 py-2">
+                                Poziom: <strong>{{ colony.buildings[b]['level'] }}</strong>
+                            </span>
+
+                        </div>
+
+                        <!-- Production -->
+                        <div class="card-body py-1">
+                            {% for key in colony.buildings[b]['production'] %}
+                                <li class="card-text list-inline-item">
+                                    <span class="lead">
+                                        <strong>{{ key.capitalize() }}:</strong>
+                                        {{ colony.buildings[b]['production'][key] }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Messages -->
+        <div class="col border">
+
+        </div>
+
+    </div>
+    
 </div>
 
 {% endblock %}

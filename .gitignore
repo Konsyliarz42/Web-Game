@@ -3,6 +3,7 @@ venv/
 instance/
 __pycache__/
 
+* copy*
 *copy.*
 
 *.xlsx

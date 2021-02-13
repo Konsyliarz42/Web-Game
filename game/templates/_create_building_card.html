@@ -1,50 +1,38 @@
-{% macro create_card(buildings, build=True) %}
+{% macro create_card(buildings) %}
 
-{% for b in buildings %}
-    <div class="accordion m-4" id="accordion">
+<div class="accordion" id="accordion_card_building">
+    {% for b in buildings %}
+        <div class="card shadow-sm">
 
-    {% if build %}
-        <div class="card shadow-sm" style="width: 768px;">
-    {% else %}
-        <div class="card shadow-sm" style="width: 512px;">
-    {% endif %}
+            <!-- Head of card -->
+            <div class="card-header shadow" id="{{ buildings[b]['name'] }}_head">
+                <a class="" data-toggle="collapse" href="#{{ buildings[b]['name'] }}_collapse" aria-expanded="false">
 
-            <div class="d-flex">
+                    <!-- Name and level of building -->
+                    <span class="lead pr-2" style="font-size: 2rem;">
+                        <strong>{{ buildings[b]['name'] }}</strong>
+                    </span>
+                    <span class="float-right lead mb-0 py-2">
+                        Poziom: <strong>{{ buildings[b]['level'] }}</strong>
+                    </span>
 
-                <!-- Image of building -->
-                <img class="shadow rounded-right float-left" src="https://webkit.org/demos/srcset/image-src.png" width="192" height="192">
+                </a>
+            </div>
 
-                <div class="float-right flex-fill">
-
-                    <!-- Name and level-->
-                    <div class="card-header p-1" id="{{ buildings[b]['name'] }}_head">
-                        {% if build %}
-                            <button class="btn btn-block " type="button" data-toggle="collapse" data-target="#{{ buildings[b]['name'] }}_hide" aria-expanded="true" aria-controls="collapseOne">
-                                <h3 class="m-0">{{ buildings[b]['name'] }}</h3>
-                                <span class="float-right m-0 lead">Poziom: {{ buildings[b]['level'] }}</span>
-                            </button>
-                        {% else %}
-                            <div class="container">
-                                <h3 class="m-0">{{ buildings[b]['name'] }}</h3>
-                                <span class="float-right m-0 lead">Poziom: {{ buildings[b]['level'] }}</span>
-                            </div>
-                        {% endif %}
-                    </div>
-
+            <!-- Hidden body of card -->
+            <div class="collapse" id="{{ buildings[b]['name'] }}_collapse">
+                <div class="card-body">
+                    
                     <!-- Description -->
-                    <div class="card-body py-1 px-2">
-                        <h5 class="card-title mb-0">Opis:</h5>
+                    <div class="container mb-4">
+                        <h5 class="card-title">Opis:</h5>
                         <p class="card-text text-break">{{ buildings[b]['description'] }}</p>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Hidden content -->
-            {% if build %}
-                <div id="{{ buildings[b]['name'] }}_hide" class="collapse px-4" aria-labelledby="{{ buildings[b]['name'] }}_head" data-parent="#accordion">
-                    <div class="card-body row">
 
-                        <!-- Build's cost -->
+                    <!-- Cost, conditions and production -->
+                    <div class="container row no-gutters text-center mb-4">
+
+                        <!-- Cost -->
                         <div class="col">
                             <h5 class="card-title">Koszt budowy:</h5>
                             {% for key in buildings[b]['build_cost'] %}
@@ -54,63 +42,69 @@
                                 </li>
                             {% endfor %}
                         </div>
-    
-                        <!-- Build's conditions -->
+
+                        <!-- Conditions -->
                         <div class="col">
-                            {% if buildings[b]['build_conditions'] %}
-                                <h5 class="card-title">Wymagnia:</h5>
-                                {% for key in buildings[b]['build_conditions'] %}
-                                    <li class="card-text">
-                                        <strong>{{ key.capitalize() }}:</strong>
-                                        {{ buildings[b]['build_conditions'][key] }}
-                                    </li>
-                                {% endfor %}
-                            {% endif %}
+                            <h5 class="card-title">Wymagnia:</h5>
+                            {% for key in buildings[b]['build_conditions'] %}
+                                <li class="card-text">
+                                    <strong>{{ key.capitalize() }}:</strong>
+                                    {{ buildings[b]['build_conditions'][key] }}
+                                </li>
+                            {% endfor %}
                         </div>
-    
+
                         <!-- Production -->
-                        <dl class="col">
+                        <div class="col">
                             <h5 class="card-title">Produkcja:</h5>
                             {% for key in buildings[b]['production'] %}
                                 <li class="card-text">
                                     <strong>{{ key.capitalize() }}:</strong>
-                                    {% if 0 >= buildings[b]['production'][key] %}
+                                    {% if 0 > buildings[b]['production'][key] %}
                                         <span class="text-danger">{{ buildings[b]['production'][key] }}</span>
                                     {% else %}
                                         <span class="text-success">+{{ buildings[b]['production'][key] }}</span>
                                     {% endif %}
                                 </li>
                             {% endfor %}
-                        </dl>
+                        </div>
+
                     </div>
 
-                    <!-- Build's time and actions -->
-                    <div class="pb-4">
-                        <p class="lead mb-2"><strong>Czas budowy: </strong>{{ buildings[b]['build_time'] }}</p>
+                    <!-- Build -->
+                    <div class="container row no-gutters">
 
-                        {% if buildings[b]['level'] == 1 %}
-                            <a class="btn btn-block btn-outline-primary">Buduj</a>
-                        {% else %}
-                            <a class="btn btn-block btn-outline-info">Rozbuduj</a>
-                        {% endif %}
-                    </div>
-                </div>
-            {% else %}
-                <div class="card-footer row py-1">
-                    {% for key in buildings[b]['production'] %}
-                        <li class="col">
-                            <strong>{{ key.capitalize() }}:</strong>
-                            {% if 0 >= buildings[b]['production'][key] %}
-                                <span class="text-danger">{{ buildings[b]['production'][key] }}</span>
+                        <!-- Time of build -->
+                        <div class="col">
+                            <strong>Czas budowy:</strong>
+                            <span class="lead align-middle">{{ buildings[b]['build_time'] }}</span>
+                        </div>
+                        
+                        <!-- Build button -->
+                        <div class="col shadow-sm">
+                            {% if buildings[b]['build_allow'] %}
+                                <form method="POST">
+                                    <input name="build" value="{{ buildings[b]['image'][: buildings[b]['image'].rfind('.')] }}" hidden>
+                                    <button type="submit" class="btn btn-block btn-primary">
+                                        {% if buildings[b]['level'] > 1 %}  Rozbuduj
+                                        {% else %}                          Buduj
+                                        {% endif %}
+                                    </button>
+                                </form>
                             {% else %}
-                                <span class="text-success">+{{ buildings[b]['production'][key] }}</span>
+                                <button type="submit" class="btn btn-block btn-outline-danger" disabled>
+                                    Nie spełniono wymagań
+                                </button>
                             {% endif %}
-                        </li>
-                    {% endfor %}
+                        </div>
+
+                    </div>
+
                 </div>
-            {% endif %}
+            </div>
         </div>
-    </div>
-{% endfor %}
+    {% endfor %}
+</div>
+
 
 {% endmacro %}

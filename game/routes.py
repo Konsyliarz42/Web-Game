@@ -4,11 +4,11 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash
 from . import make_response, render_template, request, redirect, url_for
 
-from .routes_functions import get_user, get_colonies, translate_keys, get_next_buildings
+from .routes_functions import get_user, get_colonies, translate_keys, get_next_buildings, update_colony
 from .forms import RegisterForm, LoginForm, NewColonyForm
 from .models import db, User, Colony
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 api = Api()
 
@@ -86,7 +86,8 @@ class Game(Resource):
             colony = Colony(
                 name = cform.name.data,
                 owner = current_user.id,
-                created = date.today()
+                created = date.today(),
+                build_now = dict()
             )
 
             colony.starter_pack()
@@ -108,27 +109,16 @@ class Game(Resource):
 class ColonyPage(Resource):
 
     def get(self, colony_id):
-        colony = Colony.query.filter_by(id=colony_id, owner=current_user.id).first()
+        update_colony(colony_id)
+        colony = get_colonies(colony_id)
 
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
-        colony = {
-            'id': colony.id,
-            'owner': current_user.nick,
-            'name': colony.name,
-            'created': colony.created,
-            'created_days': (date.today() - colony.created).days,
-
-            'position': {
-                'x': colony.position_x,
-                'y': colony.position_y
-            },
-
-            'main_resources': translate_keys(colony.resources),
-            'buildings': translate_keys(colony.buildings)
-        }
-
+        colony_db = Colony.query.filter_by(id=colony_id).first()
+        colony['main_resources'] = translate_keys(colony_db.resources)
+        colony['buildings'] = translate_keys(colony_db.buildings)
+        
         return make_response(render_template('colony.html',
             user=get_user(),
             colony=colony
@@ -140,30 +130,44 @@ class ColonyPage(Resource):
 class ColonyBuild(Resource):
 
     def get(self, colony_id):
-        colony = Colony.query.filter_by(id=colony_id, owner=current_user.id).first()
+        update_colony(colony_id)
+        colony = get_colonies(colony_id)
 
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
-        buildings = translate_keys(get_next_buildings(colony.buildings))
-
-        colony = {
-            'id': colony.id,
-            'owner': current_user.nick,
-            'name': colony.name,
-            'created': colony.created,
-            'created_days': (date.today() - colony.created).days,
-
-            'position': {
-                'x': colony.position_x,
-                'y': colony.position_y
-            },
-
-            'main_resources': translate_keys(colony.resources),
-        }
+        colony_db = Colony.query.filter_by(id=colony_id).first()
+        buildings = get_next_buildings(colony_db.buildings, colony_db.resources)
+        colony['main_resources'] = translate_keys(colony_db.resources)
 
         return make_response(render_template('colony_build.html',
             user=get_user(),
             colony=colony,
-            buildings=buildings
+            buildings=translate_keys(buildings)
         ), 200)
+
+
+    def post(self, colony_id):
+
+        colony = Colony.query.filter_by(id=colony_id).first()
+        buildings = get_next_buildings(colony.buildings, colony.resources)
+        build = buildings[request.form['build']]
+
+        # Subtraction build cost form colony resources
+        for resource in build['build_cost']:
+            colony.resources[resource][0] -= build['build_cost'][resource]
+
+        # Add building to build list
+        build['build_end'] = datetime.today() + build['build_time']
+        colony.build_now.update({request.form['build']: build})
+
+        # Save changes
+        Colony.query.filter_by(id=colony_id).update({
+            'resources': colony.resources,
+            'build_now': colony.build_now
+        })
+        db.session.commit()
+
+        return make_response(
+            redirect(url_for('colony_build', colony_id=colony_id)
+        ), 303)

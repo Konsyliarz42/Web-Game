@@ -3,7 +3,7 @@
 {% block content %}
 {{ super() }}
 
-<div class="card" style="max-width: 1500px">
+<div class="card">
     <div class="card-header">
          <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item"><a class="nav-link" href="/game">Powrót do listy kolonii</a></li>
@@ -13,12 +13,10 @@
         </ul>
     </div>
 
-    <div class="row">
-        <div class="col"></div>
-        <div class="col p-4">{{ create_card(buildings) }}</div>
+    <div class="row p-4">
+        <div class="col border">Budynki{{ create_card(buildings) }} {{ colony.build_now }}</div>
+        <div class="col border">Produkcja</div>
     </div>
-    
-
 </div>
 
 {% endblock %}
