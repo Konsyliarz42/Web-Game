@@ -16,6 +16,7 @@ api = Api()
 class Home(Resource):
 
     def get(self):
+
         rform = RegisterForm()
         lform = LoginForm()
 
@@ -31,30 +32,34 @@ class Home(Resource):
 
 
     def post(self):
+
         rform = RegisterForm()
         lform = LoginForm()
+        print(request.form, bool(request.form['register']), bool(request.form['login']))
 
         # Register user
-        if rform.validate_on_submit():
-            user = User(
-                email = rform.email.data,
-                password = generate_password_hash(rform.password.data, 'sha256'),
-                nick = rform.nick.data,
-                created = date.today()
-            )
+        if bool(request.form['register']):
+            if rform.validate_on_submit():
+                user = User(
+                    email = rform.email.data,
+                    password = generate_password_hash(rform.password.data, 'sha256'),
+                    nick = rform.nick.data,
+                    created = date.today()
+                )
 
-            db.session.add(user)
-            db.session.commit()
+                db.session.add(user)
+                db.session.commit()
 
-            user = User.query.filter_by(nick=rform.nick.data).first()
-            login_user(user)
-            return make_response(redirect(url_for('game')), 301) 
+                user = User.query.filter_by(nick=rform.nick.data).first()
+                login_user(user)
+                return make_response(redirect(url_for('game')), 301)
 
         # Login user
-        if lform.validate_on_submit():
-            user = User.query.filter_by(email=lform.email.data).first()
-            login_user(user)
-            return make_response(redirect(url_for('game')), 301) 
+        elif bool(request.form['login']):
+            if lform.validate_on_submit():
+                user = User.query.filter_by(email=lform.email.data).first()
+                login_user(user)
+                return make_response(redirect(url_for('game')), 301) 
 
         return make_response(render_template('home.html',
             user=get_user(),
@@ -68,6 +73,7 @@ class Home(Resource):
 class Game(Resource):
 
     def get(self):
+
         cform = NewColonyForm()
 
         return make_response(render_template('game.html',
@@ -78,6 +84,7 @@ class Game(Resource):
 
     
     def post(self):
+
         cform = NewColonyForm()
         code = 401
 
@@ -87,7 +94,8 @@ class Game(Resource):
                 name = cform.name.data,
                 owner = current_user.id,
                 created = date.today(),
-                build_now = dict()
+                build_now = dict(),
+                last_harvest = datetime.now()
             )
 
             colony.starter_pack()
@@ -109,7 +117,8 @@ class Game(Resource):
 class ColonyPage(Resource):
 
     def get(self, colony_id):
-        update_colony(colony_id)
+
+        messages = update_colony(colony_id)
         colony = get_colonies(colony_id)
 
         if not colony:
@@ -121,7 +130,9 @@ class ColonyPage(Resource):
         
         return make_response(render_template('colony.html',
             user=get_user(),
-            colony=colony
+            messages=translate_keys(messages),
+            colony=colony,
+            build_list=[key for key in colony_db.build_now]
         ), 200)
 
 
@@ -130,36 +141,75 @@ class ColonyPage(Resource):
 class ColonyBuild(Resource):
 
     def get(self, colony_id):
-        update_colony(colony_id)
+
+        messages = update_colony(colony_id)
         colony = get_colonies(colony_id)
 
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
         colony_db = Colony.query.filter_by(id=colony_id).first()
-        buildings = get_next_buildings(colony_db.buildings, colony_db.resources)
+        buildings = get_next_buildings(colony_db.buildings, colony_db.resources, colony_db.build_now)
         colony['main_resources'] = translate_keys(colony_db.resources)
 
         return make_response(render_template('colony_build.html',
             user=get_user(),
             colony=colony,
-            buildings=translate_keys(buildings)
+            messages=translate_keys(messages),
+            buildings=translate_keys(buildings),
+            build_list=[key for key in colony_db.build_now]
         ), 200)
 
 
     def post(self, colony_id):
 
         colony = Colony.query.filter_by(id=colony_id).first()
-        buildings = get_next_buildings(colony.buildings, colony.resources)
-        build = buildings[request.form['build']]
+        buildings = get_next_buildings(colony.buildings, colony.resources, colony.build_now)
 
-        # Subtraction build cost form colony resources
-        for resource in build['build_cost']:
-            colony.resources[resource][0] -= build['build_cost'][resource]
+        # Remove building from build_now
+        if request.form.get('cannel'):
+            build = request.form['cannel']
+            queue = [key for key in colony.build_now.keys()]
+            colony.build_now.pop(build)
 
-        # Add building to build list
-        build['build_end'] = datetime.today() + build['build_time']
-        colony.build_now.update({request.form['build']: build})
+            # Update time in other buildings
+            if colony.build_now:
+                buildings_timedelta = timedelta()
+
+                for building in colony.build_now.keys():
+                    b = colony.build_now[building]['build_time_dict']
+                    bt = timedelta(
+                        days=b['days'],
+                        hours=b['hours'],
+                        minutes=b['minutes'],
+                        seconds=b['seconds']
+                    )
+
+                    # Pass the building which was first in queue before remove
+                    if queue[0] != building:
+                        colony.build_now[building]['build_start'] = datetime.now() + buildings_timedelta
+                        colony.build_now[building]['build_end'] = colony.build_now[building]['build_start'] + bt
+
+                    buildings_timedelta += bt
+
+        # Add building to build_now
+        if request.form.get('build'):
+            build = buildings[request.form['build']]
+
+            # Subtraction build cost form colony resources
+            for resource in build['build_cost']:
+                colony.resources[resource][0] -= build['build_cost'][resource]
+
+            # Add building to build list
+            build['build_start'] = datetime.now()
+            build['build_end'] = build['build_time']
+
+            for building in colony.build_now:
+                build['build_start'] = colony.build_now[building]['build_end']
+                build['build_end'] += build['build_time']
+
+            build['build_end'] += datetime.now()
+            colony.build_now.update({request.form['build']: build})
 
         # Save changes
         Colony.query.filter_by(id=colony_id).update({

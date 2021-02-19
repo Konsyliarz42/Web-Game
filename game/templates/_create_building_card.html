@@ -6,7 +6,7 @@
 
             <!-- Head of card -->
             <div class="card-header shadow" id="{{ buildings[b]['name'] }}_head">
-                <a class="" data-toggle="collapse" href="#{{ buildings[b]['name'] }}_collapse" aria-expanded="false">
+                <a data-toggle="collapse" href="#{{ buildings[b]['name'] }}_collapse" aria-expanded="false">
 
                     <!-- Name and level of building -->
                     <span class="lead pr-2" style="font-size: 2rem;">
@@ -21,7 +21,7 @@
 
             <!-- Hidden body of card -->
             <div class="collapse" id="{{ buildings[b]['name'] }}_collapse">
-                <div class="card-body">
+                <div class="card-body bg-primary-transparent">
                     
                     <!-- Description -->
                     <div class="container mb-4">
@@ -92,11 +92,20 @@
                                     </button>
                                 </form>
                             {% else %}
-                                <button type="submit" class="btn btn-block btn-outline-danger" disabled>
-                                    Nie spełniono wymagań
-                                </button>
+                                
+                                    {% if buildings[b]['build'] %}
+                                    <button type="submit" class="btn btn-block btn-outline-success" disabled>
+                                        W trakcie budowy
+                                    </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-block btn-outline-danger" disabled>
+                                            Nie spełniono wymagań
+                                        </button>
+                                    {% endif %}
+                                
                             {% endif %}
                         </div>
+                        {{buildings[b]}}
 
                     </div>
 

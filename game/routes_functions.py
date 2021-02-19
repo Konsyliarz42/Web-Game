@@ -36,7 +36,8 @@ def get_colonies(colony_id=None):
                 'x': colony.position_x,
                 'y': colony.position_y
             },
-            'build_now': colony.build_now
+            'build_now': colony.build_now,
+            'last_harvest': colony.last_harvest
         }
 
         # Return colony with colony_id
@@ -77,7 +78,7 @@ def translate_keys(dictionary):
     return result
 
 
-def get_next_buildings(colony_buildings, colony_resources):
+def get_next_buildings(colony_buildings, colony_resources, colony_build_now):
     """The functions returns buildings which user can build or upgrade."""
 
     keys = ['house', 'sawmill', 'quarry', 'barracks', 'magazine', 'farm', 'windmill', 'bakery', 'fishs_hut']
@@ -102,38 +103,79 @@ def get_next_buildings(colony_buildings, colony_resources):
     for b in buildings:
         conditions = buildings[b]['build_conditions']
         buildings[b]['build_allow'] = True
+        buildings[b]['build'] = False
 
-        # Check build conditions
-        for c in conditions.keys():
-            if colony_buildings[c]['level'] < conditions[c]:
-                buildings[b]['build_allow'] = False
-                break
-
-        # Check build cost
-        if not buildings[b]['build_allow']:
-            cost = buildings[b]['build_cost']
-
-            for c in cost.keys():
-                if colony_resources[c][0] < cost[c]:
+        # Limit of build
+        if len(colony_build_now) >= 3:
+            buildings[b]['build_allow'] = False
+        else:
+            # Check build conditions
+            for c in conditions.keys():
+                if colony_buildings[c]['level'] < conditions[c]:
                     buildings[b]['build_allow'] = False
                     break
+
+            # Check build cost
+            if buildings[b]['build_allow']:
+                cost = buildings[b]['build_cost']
+
+                for c in cost.keys():
+                    if colony_resources[c][0] < cost[c]:
+                        buildings[b]['build_allow'] = False
+                        break
+
+            # Check is building on build list?
+            if b in colony_build_now:
+                buildings[b]['build_allow'] = False
+                buildings[b]['build'] = True
 
     return buildings
 
 
 def update_colony(colony_id):
+    """Use this function in get method in all colonies' pages!\n
+    The function update data of colony. (adding resources, ending building)"""
 
     colony = Colony.query.filter_by(id=colony_id).first()
     delete_key = list()
+    messages = {'production': dict(), 'production_main': dict() , 'build': dict()}
+
+    # Add resources
+    times = round((datetime.now() - colony.last_harvest).seconds/3600)
+    hunger = False
+
+    if colony.resources['food'][0] < 0:
+        hunger = True
+
+    for resource in colony.resources:
+        production = colony.resources[resource][1]
+
+        if hunger:
+            production /= 2
+
+        colony.resources[resource][0] += times*production
+
+        if times*production > 0:
+            messages['production'][resource] = times*production
+
+            if resource in ['wood', 'stone', 'food']:
+                messages['production_main'][resource] = messages['production'][resource]
+    
+    if times:
+        print(messages)
+        colony.last_harvest = datetime.now()
 
     # End build
     for building in colony.build_now.keys():
         b = colony.build_now[building]
 
-        print(b['build_end'])
         if datetime.today() >= datetime.strptime(b['build_end'], u"%Y-%m-%d %X.%f"):
+            for r in b['production']:
+                colony.resources[r][1] += b['production'][r]
+
             colony.buildings[building] = b
             delete_key.append(building)
+            messages['build'][building] = b['level']
         else:
             break
 
@@ -143,7 +185,12 @@ def update_colony(colony_id):
     # Save changes
     Colony.query.filter_by(id=colony_id).update({
         'resources': colony.resources,
+        'last_harvest': colony.last_harvest,
         'buildings': colony.buildings,
         'build_now': colony.build_now
     })
     db.session.commit()
+
+    messages['hunger'] = hunger
+
+    return messages

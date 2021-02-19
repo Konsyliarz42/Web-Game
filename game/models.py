@@ -31,6 +31,8 @@ class Colony(db.Model):
     buildings = db.Column(TextPickleType())
     build_now = db.Column(TextPickleType())
 
+    last_harvest = db.Column(db.DateTime, nullable=False)
+
     def __repr__(self):
         return f"<Colony: {self.name} | id: {self.id}>"
 

@@ -10,25 +10,27 @@
 <div class="d-inline-flex">
 
     <!-- Login form -->
-    <div class="align-self-start p-4 m-4 border" style="width: 512px">
+    <div class="align-self-start p-4 m-4 border bg-light-transparent shadow" style="width: 512px">
         <form method="POST" action="/home">
             <dl>
                 <h3 class="display-4 text-center">Logowanie</h3>
                 {{ loginform.hidden_tag() }}
                 {{ wtf.quick_form(loginform) }}
-                <input class="btn btn-primary btn-block" type="submit" value="Zaloguj">
+                <input name="register" hidden>
+                <input name="login" class="btn btn-primary btn-block" type="submit" value="Zaloguj">
             </dl>
         </form>
     </div>
 
     <!-- Register form -->
-    <div class="p-4 m-4 border" style="width: 512px">
+    <div class="p-4 m-4 border bg-light-transparent shadow" style="width: 512px">
         <form method="POST" action="/home">
             <dl>
                 <h3 class="display-4 text-center">Rejestracja</h3>
                 {{ registerform.hidden_tag() }}
                 {{ wtf.quick_form(registerform) }}
-                <input class="btn btn-primary btn-block" type="submit" value="Zarejestruj">
+                <input name="register" class="btn btn-primary btn-block" type="submit" value="Zarejestruj">
+                <input name="login" hidden>
             </dl>
         </form>
     </div>

@@ -1,0 +1,11 @@
+body {
+    background-color: aliceblue;
+}
+
+#panel {
+    background-color: lightsteelblue;
+    border-style: solid;
+    border-color: lightslategray;
+    max-width: 512px;
+    border-radius: .3rem;
+}
