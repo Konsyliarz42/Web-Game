@@ -9,12 +9,12 @@
             <li class="nav-item"><a class="nav-link" href="/game">Powrót do listy kolonii</a></li>
             <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}">Główne</a></li>
             <li class="nav-item"><a class="nav-link active" href="/game/colonies/{{ colony.id }}/build">Budowanie</a></li>
-            <li class="nav-item"><a class="nav-link disabled" href="#">Produkcja</a></li>
+            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}/production">Produkcja</a></li>
         </ul>
     </div>
 
     <div class="row p-4">
-        <div class="col border">Budynki{{ create_card(buildings) }}</div>
+        <div class="col">{{ create_card(buildings, colony) }}</div>
         <div class="col border">Produkcja</div>
     </div>
 </div>

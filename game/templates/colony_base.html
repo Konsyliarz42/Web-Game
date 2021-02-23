@@ -1,5 +1,7 @@
 {% extends "index.html" %}
 {% from "_create_building_card.html" import create_card %}
+{% from "_create_building_card_lite.html" import create_card_lite %}
+{% from "_create_message_card.html" import create_message %}
 
 
 {% block title %} {{ colony.name }} {% endblock %}
@@ -27,13 +29,13 @@
 {% block content %}
 {{ super() }}
 
-<div class="float-right p-2" id="panel">
+<div class="float-right p-2 bg-panel-transparent" id="panel">
     <div class="container text-center">
 
         <!-- Show values of main resources -->
         <div class="row">
             {% for r in colony.main_resources %}
-                <div class="col mx-1 mb-4" style="width: 128px;">
+                <div class="col mb-4" style="width: 128px;">
                     <div class="bg-light shadow rounded-lg">
                         <strong>{{ r.capitalize() }}:</strong><br>
 
@@ -60,9 +62,9 @@
                     {% if r in messages.production_main %}
                         <div class="collapse rounded-lg bg-light-transparent shadow-sm " id="collapse_production_{{ r }}">
                             {% if messages.production_main[r] > 0 %}
-                                <span class="text-success">+{{ messages.production_main[r] }}</span>
+                                <span class="text-success">+{{ messages.production_main[r] | round(1) }}</span>
                             {% else %}
-                                <span class="text-danger">{{ messages.production_main[r] }}</span>
+                                <span class="text-danger">{{ messages.production_main[r] | round(1) }}</span>
                             {% endif %}
                         </div>
                     {% endif %}
@@ -139,14 +141,14 @@
             {% if messages.build %}
                 <div class="collapse shadow-sm bg-success-transparent rounded-lg border border-success mb-4" id="collapse_build">
 
-                    <ui class="list-inline ">
+                    <ui class="list-inline text-light">
+                        <strong>Zakończono budowę:</strong><br>
                         {% for b in messages.build %}
                             <li>
-                                <strong>Zakończono budowę:</strong><br>
                                 {{ b.capitalize() }} na poziom {{ messages.build[b] }}
-                            </li>
+                            </li><br>
                         {% endfor %}
-                    </ui><br>
+                    </ui>
 
                     <button class="btn btn-link btn-block text-secondary" data-toggle="collapse" data-target="#collapse_build">
                         Ukryj

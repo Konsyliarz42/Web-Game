@@ -7,8 +7,8 @@ $(function() {
         'build'
     ];
     
-    setTimeout(toggle_collapse, 1000)
-    setTimeout(toggle_collapse, 5000)
+    setTimeout(toggle_collapse, 500);
+    setTimeout(toggle_collapse, 5000);
 
     function toggle_collapse() {
         show = !show;
@@ -23,12 +23,12 @@ $(function() {
 
                 if(show == false) {
                     $('#' + id).collapse('toggle');
-                    collapse.add("show")
+                    collapse.add("show");
                 } else {
                     // Don't hide 'collapse_build'
                     if(ids.indexOf(for_id) < 3) {
                         $('#' + id).collapse('toggle');
-                        collapse.remove("show")
+                        collapse.remove("show");
                     }
                 }
             }

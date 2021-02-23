@@ -125,14 +125,13 @@ class ColonyPage(Resource):
             return make_response("You not have permission to view this page!", 401)
 
         colony_db = Colony.query.filter_by(id=colony_id).first()
-        colony['main_resources'] = translate_keys(colony_db.resources)
-        colony['buildings'] = translate_keys(colony_db.buildings)
+        build = [key for key in translate_keys(colony_db.build_now)]
         
         return make_response(render_template('colony.html',
             user=get_user(),
             messages=translate_keys(messages),
-            colony=colony,
-            build_list=[key for key in colony_db.build_now]
+            colony=translate_keys(colony),
+            build_list=build
         ), 200)
 
 
@@ -144,20 +143,21 @@ class ColonyBuild(Resource):
 
         messages = update_colony(colony_id)
         colony = get_colonies(colony_id)
+        
 
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
         colony_db = Colony.query.filter_by(id=colony_id).first()
+        build = [key for key in translate_keys(colony_db.build_now)]
         buildings = get_next_buildings(colony_db.buildings, colony_db.resources, colony_db.build_now)
-        colony['main_resources'] = translate_keys(colony_db.resources)
 
         return make_response(render_template('colony_build.html',
             user=get_user(),
-            colony=colony,
+            colony=translate_keys(colony),
             messages=translate_keys(messages),
             buildings=translate_keys(buildings),
-            build_list=[key for key in colony_db.build_now]
+            build_list=build
         ), 200)
 
 
@@ -221,3 +221,45 @@ class ColonyBuild(Resource):
         return make_response(
             redirect(url_for('colony_build', colony_id=colony_id)
         ), 303)
+
+
+@login_required
+@api.route('/game/colonies/<int:colony_id>/production')
+class ColonyProduction(Resource):
+
+    def get(self, colony_id):
+
+        messages = update_colony(colony_id)
+        colony = get_colonies(colony_id)
+
+        if not colony:
+            return make_response("You not have permission to view this page!", 401)
+
+        colony_db = Colony.query.filter_by(id=colony_id).first()
+        build = [key for key in translate_keys(colony_db.build_now)]
+        production = dict()
+        buildings = dict()
+
+        for res in colony_db.resources:
+            production[res] = colony_db.resources[res][1]
+            
+        for bui in colony_db.buildings:
+            buildings[bui] = dict()
+
+            for res in colony_db.resources:
+                if res in colony_db.buildings[bui]['production']:
+                    buildings[bui][res] = colony_db.buildings[bui]['production'][res]
+                else:
+                    buildings[bui][res] = 0
+
+            buildings[colony_db.buildings[bui]['name']] = buildings[bui]
+            buildings.pop(bui)
+            
+        return make_response(render_template('colony_production.html',
+            user=get_user(),
+            colony=translate_keys(colony),
+            messages=translate_keys(messages),
+            build_list=build,
+            production=translate_keys(production),
+            buildings=translate_keys(buildings)
+        ), 200)

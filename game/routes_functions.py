@@ -37,7 +37,16 @@ def get_colonies(colony_id=None):
                 'y': colony.position_y
             },
             'build_now': colony.build_now,
-            'last_harvest': colony.last_harvest
+            'last_harvest': colony.last_harvest,
+            'resources': colony.resources,
+            'buildings': colony.buildings,
+            'main_resources': {
+                'wood': colony.resources['wood'],
+                'stone': colony.resources['stone'],
+                'food': colony.resources['food'],
+                'gold': colony.resources['gold']
+            },
+            'rapports': colony.rapports
         }
 
         # Return colony with colony_id
@@ -155,7 +164,7 @@ def update_colony(colony_id):
 
         colony.resources[resource][0] += times*production
 
-        if times*production > 0:
+        if times*production != 0:
             messages['production'][resource] = times*production
 
             if resource in ['wood', 'stone', 'food']:
@@ -164,6 +173,8 @@ def update_colony(colony_id):
     if times:
         print(messages)
         colony.last_harvest = datetime.now()
+
+    messages['hunger'] = hunger
 
     # End build
     for building in colony.build_now.keys():
@@ -182,15 +193,21 @@ def update_colony(colony_id):
     for key in delete_key:
         colony.build_now.pop(key)
 
+    # Add to rapports
+    if messages['production']:
+        colony.rapports[datetime.now().__str__()] = ('info', translate_keys(messages['production']))
+
+    if messages['build']:
+        colony.rapports[datetime.now().__str__()] = ('success', translate_keys(messages['build']))
+
     # Save changes
     Colony.query.filter_by(id=colony_id).update({
         'resources': colony.resources,
         'last_harvest': colony.last_harvest,
         'buildings': colony.buildings,
-        'build_now': colony.build_now
+        'build_now': colony.build_now,
+        'rapports': colony.rapports
     })
     db.session.commit()
-
-    messages['hunger'] = hunger
 
     return messages

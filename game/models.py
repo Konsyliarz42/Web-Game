@@ -23,15 +23,14 @@ class Colony(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     owner = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created = db.Column(db.Date, nullable=False)
-
     position_x = db.Column(db.Integer, default=0)
     position_y = db.Column(db.Integer, default=0)
-
     resources = db.Column(TextPickleType())
     buildings = db.Column(TextPickleType())
     build_now = db.Column(TextPickleType())
-
     last_harvest = db.Column(db.DateTime, nullable=False)
+    rapports = db.Column(TextPickleType(), default=dict())
+    army = db.Column(TextPickleType(), default=dict())
 
     def __repr__(self):
         return f"<Colony: {self.name} | id: {self.id}>"
@@ -42,7 +41,8 @@ class Colony(db.Model):
             # name: [in magazine, production per hour]
             'wood': [1000, 0.0],
             'stone': [1000, 0.0],
-            'food': [1000, 0.5]
+            'food': [1000, 0.5],
+            'gold': [100, 0.0]
         }
 
         self.buildings = {

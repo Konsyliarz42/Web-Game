@@ -3,7 +3,6 @@ body {
 }
 
 #panel {
-    background-color: lightsteelblue;
     border-style: solid;
     border-color: lightslategray;
     max-width: 512px;

@@ -1,7 +1,11 @@
-.bg-primary-transparent { background-color: rgba(2, 117, 216, 0.4);     }
-.bg-success-transparent { background-color: rgba(92, 184, 92, 0.4);     }
-.bg-info-transparent    { background-color: rgba(91, 192, 222, 0.4);    }
-.bg-warning-transparent { background-color: rgba(240, 173, 78, 0.4);    }
-.bg-danger-transparent  { background-color: rgba(217, 83, 79, 0.4);     }
-.bg-dark-transparent    { background-color: rgba(41, 43, 44, 0.4);      }
-.bg-light-transparent   { background-color: rgba(247, 247, 247, 0.4);   }
+.bg-primary-transparent     { background-color: rgba(2, 117, 216, 0.4);     }
+.bg-secondary-transparent   { background-color: rgba(134, 142, 150, 0.4);   }
+.bg-success-transparent     { background-color: rgba(92, 184, 92, 0.4);     }
+.bg-info-transparent        { background-color: rgba(91, 192, 222, 0.4);    }
+.bg-warning-transparent     { background-color: rgba(240, 173, 78, 0.4);    }
+.bg-danger-transparent      { background-color: rgba(217, 83, 79, 0.4);     }
+.bg-dark-transparent        { background-color: rgba(41, 43, 44, 0.4);      }
+.bg-light-transparent       { background-color: rgba(247, 247, 247, 0.4);   }
+
+.bg-panel               { background-color: rgb(97, 125, 156);          }
+.bg-panel-transparent   { background-color: rgba(97, 125, 156, 0.4);    }

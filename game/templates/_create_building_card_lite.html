@@ -1,0 +1,22 @@
+{% macro create_card_lite(buildings) %}
+
+<div class="overflow-auto rounded-lg" style="max-height: 256px;">
+    {% for b in buildings %}
+        <div class="card-group">
+            
+            <!-- Image of building -->
+            <div class="card bg-secondary-transparent" style="max-width: 64px;">
+                <img src="{{ buildings[b]['image'] }}" alt="{{ buildings[b]['image'] }}">
+            </div>
+
+            <h4 class="card card-header bg-light" style="height: 64px;">
+                {{ buildings[b]['name'] }}
+                <span class="lead">Poziom: {{ buildings[b]['level'] }}</span>
+            </h4>
+
+        </div>
+    {% endfor %}
+</div>
+
+
+{% endmacro %}

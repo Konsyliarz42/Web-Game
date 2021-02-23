@@ -1,0 +1,59 @@
+{% extends "colony_base.html" %}
+
+{% block content %}
+{{ super() }}
+
+<div class="card">
+    <div class="card-header">
+         <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item"><a class="nav-link" href="/game">Powrót do listy kolonii</a></li>
+            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}">Główne</a></li>
+            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}/build">Budowanie</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/game/colonies/{{ colony.id }}/production">Produkcja</a></li>
+        </ul>
+    </div>
+
+    <div class="card-body">
+        <label for="table">Produkcja na godzinę</label>
+        <table class="table table-hover shadow-sm" style="width: min-content;" id="table">
+
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Budynek</th>
+
+                    {% for res in production %}
+                        <th scope="col">{{ res.capitalize() }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for bui in buildings %}
+                    <tr>
+                        <td>{{ bui }}</td>
+
+                        {% for res in buildings[bui] %}
+                            {% if buildings[bui][res] == 0 %}
+                                <td class="text-body">-</td>
+                            {% elif buildings[bui][res] > 0%}
+                                <td class="text-success">+{{ buildings[bui][res] }}</td>
+                            {% else %}
+                                <td class="text-danger">{{ buildings[bui][res] }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                <tr class="table-info">
+                    <td><strong>Suma</strong></td>
+                    {% for res in production %}
+                        <td>{{ production[res] | round(1) }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    
+</div>
+
+{% endblock %}

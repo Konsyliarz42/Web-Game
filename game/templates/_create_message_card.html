@@ -1,0 +1,27 @@
+{% macro create_message(rapports) %}
+
+{% for datetime in rapports %}
+    <div class="card-group">
+        <h5 class="card card-header bg-{{ rapports[datetime][0] }}-transparent" style="max-width: 192px;">{{ datetime[:-7] }}</h5>
+
+        <div class="card">
+            {% if rapports[datetime][0] == 'info' %}
+                <span class="lead mb-1 mx-2">W tej godzinie wyprodukowano:</span>
+            {% endif %}
+
+            <ul class="my-auto">
+                {% for key in rapports[datetime][1] %}
+                    {% if rapports[datetime][0] == 'info' %}
+                        <li><strong>{{ key.capitalize() }}: </strong>{{ rapports[datetime][1][key] | round(1)}}</li>
+                    {% elif rapports[datetime][0] == 'success' %}
+                        <li>Zakończono budowę <strong>{{ key.capitalize() }}</strong> na poziomie {{ rapports[datetime][1][key] }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+        </div>
+    </div>
+    
+{% endfor %}
+
+{% endmacro %}
