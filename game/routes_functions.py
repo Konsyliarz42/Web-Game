@@ -46,8 +46,14 @@ def get_colonies(colony_id=None):
                 'food': colony.resources['food'],
                 'gold': colony.resources['gold']
             },
-            'rapports': colony.rapports
+            'rapports': dict()
         }
+
+        for dt in colony.rapports:
+            if dt[:10] == date.today().__str__():
+                c['rapports'][dt] = colony.rapports[dt]
+            else:
+                break
 
         # Return colony with colony_id
         if colony_id and c['id'] == colony_id:
@@ -195,10 +201,20 @@ def update_colony(colony_id):
 
     # Add to rapports
     if messages['production']:
-        colony.rapports[datetime.now().__str__()] = ('info', translate_keys(messages['production']))
+        data = {datetime.now().__str__(): ('info', translate_keys(messages['production']))}
+
+        for dt in colony.rapports:
+            data[dt] = colony.rapports[dt]
+
+        colony.rapports = data
 
     if messages['build']:
-        colony.rapports[datetime.now().__str__()] = ('success', translate_keys(messages['build']))
+        data = {datetime.now().__str__(): ('success', translate_keys(messages['build']))}
+
+        for dt in colony.rapports:
+            data[dt] = colony.rapports[dt]
+
+        colony.rapports = data
 
     # Save changes
     Colony.query.filter_by(id=colony_id).update({

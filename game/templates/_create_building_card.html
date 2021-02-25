@@ -5,8 +5,8 @@
         <div class="card shadow-sm">
 
             <!-- Head of card -->
-            <div class="card-header shadow" id="{{ buildings[b]['name'] }}_head">
-                <a data-toggle="collapse" href="#{{ buildings[b]['name'] }}_collapse" aria-expanded="false">
+            <div class="card-header shadow">
+                <a onclick="collapse_toggle('{{ buildings[b].name }}_collapse')" role="button" class="btn-block text-decoration-none">
 
                     <!-- Name and level of building -->
                     <span class="lead pr-2" style="font-size: 2rem;">
@@ -26,13 +26,13 @@
             </div>
 
             <!-- Hidden body of card -->
-            <div class="collapse" id="{{ buildings[b]['name'] }}_collapse">
+            <div class="collapse" id="{{ buildings[b].name }}_collapse">
                 <div class="card-body bg-panel-transparent">
                     
                     <!-- Description -->
                     <div class="card mb-4 px-4 shadow-sm bg-light-transparent">
                         <h5 class="card-title">Opis:</h5>
-                        <p class="card-text text-break">{{ buildings[b]['description'] }}</p>
+                        <p class="card-text text-break">{{ buildings[b].description }}</p>
                     </div>
 
                     <!-- Cost, conditions and production -->

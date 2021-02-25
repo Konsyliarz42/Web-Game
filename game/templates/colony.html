@@ -15,26 +15,33 @@
 
     <div class="card-body row no-gutters">
 
-        <!-- Buildings -->
-        <div class="col">
-            <div class="container pb-4">
+        <div class="col mx-4">
+
+            <!-- Buildings -->
+            <div class="container pb-4 my-4 shadow-sm border bg-panel-transparent">
                 <h3 class="text-center">Budynki</h3>
-                {{ create_card_lite(colony.buildings) }}
+                <div class="overflow-auto rounded-lg" style="max-height: 256px;">
+                    {{ create_card_lite(colony.buildings) }}
+                </div>
             </div>
 
-            <div class="container pb-4">
+            <!-- Army -->
+            <div class="container pb-4 my-4 shadow-sm border bg-panel-transparent">
                 <h3 class="text-center">Armia</h3>
-                
             </div>
             
         </div>
 
-        <!-- Messages -->
-        <div class="col border">
-            <h3 class="text-center">Raporty</h3>
+  
+        <div class="col mx-4">
 
-                {{ create_message(colony.rapports) }}
-
+            <!-- Rapports -->
+            <div class="container pb-4 my-4 shadow-sm border bg-panel-transparent">
+                <h3 class="text-center">Raporty</h3>
+                <div class="overflow-auto rounded-lg" style="max-height: 256px;">
+                    {{ create_message(colony.rapports) }}
+                </div>
+            </div>
             
         </div>
 
