@@ -92,6 +92,9 @@
         <!-- User buttons -->
         {% if user %}
         <div class="btn-group ml-auto" role="group">
+            {% if user.id == 1 %}
+                <a class="btn btn-outline-info" href="/admin">Panel Administratora</a>
+            {% endif %}
             <button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-expanded="false">
                 <span>Moje konto</span>
             </button>

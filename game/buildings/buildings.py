@@ -100,7 +100,7 @@ def sawmill(level: int):
         # Production per hour
         'production': {
             'food': -0.7*level - level,
-            'wood': 1.5*level - level
+            'wood': 3.0*level - level
         },
         # Build
         'build_cost': {
@@ -126,7 +126,7 @@ def quarry(level: int):
         # Production per hour
         'production': {
             'food': -0.7*level - level,
-            'stone': 1.5*level - level
+            'stone': 2.2*level - level
         },
         # Build
         'build_cost': {
@@ -203,7 +203,7 @@ def farm(level: int):
         'image': "farm.jpg",
         # Production per hour
         'production': {
-            'food': 2.9*level,
+            'food': 4.1*level,
         },
         # Build
         'build_cost': {
@@ -279,7 +279,7 @@ def fishs_hut(level: int):
         'image': "fishs_hut.jpg",
         # Production per hour
         'production': {
-            'food': 0.5*level,
+            'food': 1.2*level,
         },
         # Build
         'build_cost': {
