@@ -12,20 +12,25 @@
 
             <div class="card">
                 <div class="card-header">
-                    <a onclick="collapse_toggle('{{ id }}_collapse')" role="button" class="btn-block text-decoration-none">
-                        {% if rapports[datetime][0] == 'info' %}
-                            Raport z produkcji
-                        {% endif %}
-                    </a>
+                    {% if rapports[datetime][0] == 'info' %}
+                        <a onclick="collapse_toggle('{{ id }}_collapse')" role="button" class="btn-block text-decoration-none">Raport z produkcji</a>
+                    {% elif rapports[datetime][0] == 'success' %}
+                        {% for key in rapports[datetime][1] %}
+                            <p class="my-0">Zakończono budowę <strong>{{ key.capitalize() }}</strong> na poziom {{ rapports[datetime][1][key] }}</p>
+                        {% endfor%}
+                        
+                    {% endif %}
                 </div>
 
-                <div class="collapse" id="{{ id }}_collapse">
-                    <ul class="card-body py-0">
-                        {% for key in rapports[datetime][1] %}
-                            <li>{{ key.capitalize() }}: {{ rapports[datetime][1][key] | round(1) }}</li>
-                        {% endfor%}
-                    </ul>
-                </div>
+                {% if rapports[datetime][0] == 'info' %}
+                    <div class="collapse" id="{{ id }}_collapse">
+                        <ul class="card-body py-0">
+                            {% for key in rapports[datetime][1] %}
+                                <li>{{ key.capitalize() }}: {{ rapports[datetime][1][key] | round(1) }}</li>
+                            {% endfor%}
+                        </ul>
+                    </div>
+                {% endif %}
                 
             </div>
         </div>

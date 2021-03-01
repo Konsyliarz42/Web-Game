@@ -4,7 +4,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash
 from . import make_response, render_template, request, redirect, url_for
 
-from .routes_functions import get_user, get_colonies, translate_keys, get_next_buildings, update_colony
+from .routes_functions import get_user, get_colonies, translate_keys, get_next_buildings, update_colony, get_map
 from .forms import RegisterForm, LoginForm, NewColonyForm
 from .models import db, User, Colony
 
@@ -262,4 +262,28 @@ class ColonyProduction(Resource):
             build_list=build,
             production=translate_keys(production),
             buildings=translate_keys(buildings)
+        ), 200)
+
+
+@login_required
+@api.route('/game/colonies/<int:colony_id>/map')
+class ColonyMap(Resource):
+
+    def get(self, colony_id):
+        messages = update_colony(colony_id)
+        colony = get_colonies(colony_id)
+
+        if not colony:
+            return make_response("You not have permission to view this page!", 401)
+
+        colony_db = Colony.query.filter_by(id=colony_id).first()
+        build = [key for key in translate_keys(colony_db.build_now)]
+        positions = get_map()
+
+        return make_response(render_template('colony_map.html',
+            user=get_user(),
+            colony=translate_keys(colony),
+            messages=translate_keys(messages),
+            build_list=build,
+            position=positions
         ), 200)

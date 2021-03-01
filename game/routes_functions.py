@@ -13,7 +13,8 @@ def get_user():
             'nick': current_user.nick,
             'email': current_user.email,
             'created': current_user.created,
-            'created_days': (date.today() - current_user.created).days
+            'created_days': (date.today() - current_user.created).days,
+            'colonies': current_user.colonies
         }
 
 
@@ -227,3 +228,33 @@ def update_colony(colony_id):
     db.session.commit()
 
     return messages
+
+
+def get_map():
+
+    # Create empty map
+    positions = dict()
+    for x in range(10):
+        positions[x] = dict()
+
+        for y in range(10):
+            positions[x][y] = None
+
+    # Add colonies to the map
+    for colony in Colony.query.all():
+        x = colony.position_x
+        y = colony.position_y
+
+        positions[x][y] = {
+            'id': colony.id,
+            'owner': current_user.nick,
+            'name': colony.name,
+            'created': colony.created,
+            'created_days': (date.today() - colony.created).days,
+            'position': {
+                'x': colony.position_x,
+                'y': colony.position_y
+            }
+        }
+
+    return positions

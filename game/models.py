@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy 
 from flask_login import UserMixin
+from random import randint
 
 from .models_columns import TextPickleType
 from .buildings.buildings import house
@@ -37,6 +38,17 @@ class Colony(db.Model):
 
 
     def starter_pack(self):
+        # Random position on map
+        x = randint(0, 10)
+        y = randint(0, 10)
+
+        while Colony.query.filter_by(position_x=x, position_y=y).first():
+            x = randint(0, 10)
+            y = randint(0, 10)
+
+        self.position_x = x
+        self.position_y = y
+
         self.resources = {
             # name: [in magazine, production per hour]
             'wood': [1000, 0.0],

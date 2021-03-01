@@ -70,7 +70,7 @@ def house(level: int):
         'level': level,
         'name': "Dom",
         'description': "...",
-        'image': "house.jpg",
+        'image': "house.png",
         # Production per hour
         'production': {
             'food': -0.5*level - level
@@ -96,7 +96,7 @@ def sawmill(level: int):
         'level': level,
         'name': "Tartak",
         'description': "...",
-        'image': "sawmill.jpg",
+        'image': "sawmill.png",
         # Production per hour
         'production': {
             'food': -0.7*level - level,
@@ -122,7 +122,7 @@ def quarry(level: int):
         'level': level,
         'name': "Kamieniołom",
         'description': "...",
-        'image': "quarry.jpg",
+        'image': "quarry.png",
         # Production per hour
         'production': {
             'food': -0.7*level - level,
@@ -148,7 +148,7 @@ def barracks(level: int):
         'level': level,
         'name': "Koszary",
         'description': "...",
-        'image': "barracks.jpg",
+        'image': "barracks.png",
         # Production per hour
         'production': {
             'food': -1.0*level - level,
@@ -174,7 +174,7 @@ def magazine(level: int):
         'level': level,
         'name': "Magazyn",
         'description': "...",
-        'image': "magazine.jpg",
+        'image': "magazine.png",
         # Production per hour
         'production': {
             'food': 0.2*level - level,
@@ -200,7 +200,7 @@ def farm(level: int):
         'level': level,
         'name': "Farma",
         'description': "...",
-        'image': "farm.jpg",
+        'image': "farm.png",
         # Production per hour
         'production': {
             'food': 4.1*level,
@@ -226,7 +226,7 @@ def windmill(level: int):
         'level': level,
         'name': "Młyn",
         'description': "...",
-        'image': "windmill.jpg",
+        'image': "windmill.png",
         # Production per hour
         'production': {
             'food': 1.4*level,
@@ -251,7 +251,7 @@ def bakery(level: int):
         'level': level,
         'name': "Piekarnia",
         'description': "...",
-        'image': "bakery.jpg",
+        'image': "bakery.png",
         # Production per hour
         'production': {
             'food': 3.2*level,
@@ -276,7 +276,7 @@ def fishs_hut(level: int):
         'level': level,
         'name': "Rybak",
         'description': "...",
-        'image': "fishs_hut.jpg",
+        'image': "fishs_hut.png",
         # Production per hour
         'production': {
             'food': 1.2*level,

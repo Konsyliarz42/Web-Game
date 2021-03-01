@@ -12,6 +12,7 @@
 
     <!-- Show collapse -->
     <script type="text/javascript" src="{{ url_for('.static', filename='js/automatic_collapse.js') }}"></script>
+    
 
     {% if colony.build_now %}
 
@@ -122,7 +123,7 @@
                             </div>
                         </div>
                     {% else %}
-                        <dvi class="card text-left shadow-sm">
+                        <div class="card text-left shadow-sm">
                             <div class="card-body p-2">
                                 <form method="POST">
                                     <strong>{{ colony.build_now[building]['name'] }}</strong> Poziom: {{ colony.build_now[building]['level'] }}
@@ -132,7 +133,7 @@
                                     <button type="submit" class="btn btn-sm btn-outline-danger float-right">Anuluj</button>
                                 </form>
                             </div>
-                        </dvi>
+                        </div>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -141,14 +142,14 @@
             {% if messages.build %}
                 <div class="collapse shadow-sm bg-success-transparent rounded-lg border border-success mb-4" id="collapse_build">
 
-                    <ui class="list-inline text-light">
+                    <ul class="list-inline text-light">
                         <strong>Zakończono budowę:</strong><br>
                         {% for b in messages.build %}
                             <li>
                                 {{ b.capitalize() }} na poziom {{ messages.build[b] }}
                             </li><br>
                         {% endfor %}
-                    </ui>
+                    </ul>
 
                     <button class="btn btn-link btn-block text-secondary" data-toggle="collapse" data-target="#collapse_build">
                         Ukryj

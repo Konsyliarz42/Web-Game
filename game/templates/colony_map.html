@@ -1,0 +1,77 @@
+{% extends "colony_base.html" %}
+
+{% block content %}
+{{ super() }}
+
+<div class="card">
+    <div class="card-header">
+         <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item"><a class="nav-link" href="/game">Powrót do listy kolonii</a></li>
+            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}">Główne</a></li>
+            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}/build">Budowanie</a></li>
+            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}/production">Produkcja</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/game/colonies/{{ colony.id }}/map">Mapa</a></li>
+        </ul>
+    </div>
+
+    <div class="card-body row no-gutters">
+
+        <div class="col shadow">
+            <table class="table table-bordered text-center my-auto">
+                <thead>
+                    <tr>
+                        <th scope="col" class="table-dark"></th>
+                        {% for x in range(10) %}
+                            <th scope="col" class="table-dark">{{ x }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for y in range(10) %}
+                        <tr>
+                            <th scope="row" class="table-dark">{{ y }}</th>
+
+                            {% for x in range(10) %}
+                            {% set p = position[x][y] %}
+                                <td {% if p.owner == user.nick %} class="border shadow bg-light" {% endif %}>
+                                    {% if p %}
+                                        <a role="button" class="btn-block text-decoration-none" onclick="collapse_toggle('{{ p.name }}_collapse')">
+                                            {{ p.name }}
+                                        </a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col collapse-group">
+            {% for x in range(10) %}
+            {% for y in range(10) %}
+            {% set p = position[x][y] %}
+            {% if p %}
+                <div class="card collapse" id="{{ p.name }}_collapse">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ p.name }}</h4>
+                        <h5 class="card-subtitle text-secondary">x: {{ p.position.x }} y: {{ p.position.y }}</h5>
+                        <dl class="mt-4 card-text">
+                            <p><strong>Właściciel: </strong>{{ p.owner }}</p>
+                            <p><strong>Utworzona: </strong>{{ p.created }} ({{ p.created_days }} dni temu)</p>
+                        </dl>
+                    </div>
+                    <div class="card-footer py-0 text-right">
+                        <small class="text-secondary">ID: {{ p.id }}</small>
+                    </div>
+                </div>
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
