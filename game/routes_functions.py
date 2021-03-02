@@ -2,7 +2,7 @@ from datetime import date, datetime
 from flask_login import current_user
 
 from .models import db, User, Colony
-from .buildings.buildings import house, sawmill, quarry, magazine, barracks, farm, windmill, bakery, fishs_hut
+from .buildings.buildings import house, sawmill, quarry, magazine, barracks, farm, windmill, bakery, fish_hut, mine, forge, ironworks, mint
 
 def get_user():
     """The functions returns dictionary with information about current user."""
@@ -70,11 +70,13 @@ def translate_keys(dictionary):
 
     result = dict()
     items_keys = [
+        'cat_main', 'cat_food', 'cat_advanced', 'cat_other', # Categories
         'wood', 'stone', 'food', 'gold', # Resources
         'house', 'sawmill', 'quarry', # Buildings
         'days', 'hours', 'minutes', 'seconds', # Time
     ]
     keys = [
+        'Główne', 'Żywność', 'Zaawansowane', 'Pozostałe', # Kategorie
         'drewno', 'kamień', 'jedzenie', 'złoto', # Zasoby
         'dom', 'tartak', 'kamieniołom', # Budynki
         'dni', 'godziny', 'minuty', 'sekundy', # Czas
@@ -97,7 +99,10 @@ def translate_keys(dictionary):
 def get_next_buildings(colony_buildings, colony_resources, colony_build_now):
     """The functions returns buildings which user can build or upgrade."""
 
-    keys = ['house', 'sawmill', 'quarry', 'barracks', 'magazine', 'farm', 'windmill', 'bakery', 'fishs_hut']
+    keys = ['house', 'sawmill', 'quarry', 'barracks', 'magazine',
+        'farm', 'windmill', 'bakery', 'fish_hut',
+        'mine', 'ironworks', 'forge', 'mint'
+    ]
 
     for key in keys:
         if key not in colony_buildings.keys():
@@ -113,7 +118,12 @@ def get_next_buildings(colony_buildings, colony_resources, colony_build_now):
         'farm': farm(colony_buildings['farm']['level'] + 1),
         'windmill': windmill(colony_buildings['windmill']['level'] + 1),
         'bakery': bakery(colony_buildings['bakery']['level'] + 1),
-        'fishs_hut': fishs_hut(colony_buildings['fishs_hut']['level'] + 1)
+        'fish_hut': fish_hut(colony_buildings['fish_hut']['level'] + 1),
+
+        'mine': mine(colony_buildings['mine']['level'] + 1),
+        'ironworks': ironworks(colony_buildings['ironworks']['level'] + 1),
+        'forge': forge(colony_buildings['forge']['level'] + 1),
+        'mint': mint(colony_buildings['mint']['level'] + 1)
     }
 
     for b in buildings:
@@ -126,10 +136,13 @@ def get_next_buildings(colony_buildings, colony_resources, colony_build_now):
             buildings[b]['build_allow'] = False
         else:
             # Check build conditions
-            for c in conditions.keys():
-                if colony_buildings[c]['level'] < conditions[c]:
-                    buildings[b]['build_allow'] = False
-                    break
+            try:
+                for c in conditions.keys():
+                    if colony_buildings[c]['level'] < conditions[c]:
+                        buildings[b]['build_allow'] = False
+                        break
+            except KeyError:
+                buildings[b]['build_allow'] = False
 
             # Check build cost
             if buildings[b]['build_allow']:
@@ -189,7 +202,12 @@ def update_colony(colony_id):
 
         if datetime.today() >= datetime.strptime(b['build_end'], u"%Y-%m-%d %X.%f"):
             for r in b['production']:
-                colony.resources[r][1] += b['production'][r]
+                if r not in colony.resources:
+                    colony.resources[r] = [0, b['production'][r]]
+
+                if building in colony.buildings:
+                    res_production = b['production'][r] - colony.buildings[building]['production'][r]
+                    colony.resources[r][1] += res_production
 
             colony.buildings[building] = b
             delete_key.append(building)

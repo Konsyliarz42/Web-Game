@@ -37,7 +37,7 @@
                             {% if buildings[bui][res] == 0 %}
                                 <td class="text-body">-</td>
                             {% elif buildings[bui][res] > 0%}
-                                <td class="text-success">+{{ buildings[bui][res] | round(1) }}</td>
+                                <td class="text-success">{{ buildings[bui][res] | round(1) }}</td>
                             {% else %}
                                 <td class="text-danger">{{ buildings[bui][res] | round(1) }}</td>
                             {% endif %}

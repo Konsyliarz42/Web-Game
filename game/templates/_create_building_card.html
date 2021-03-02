@@ -1,126 +1,135 @@
 {% macro create_card(buildings, colony) %}
 
 <div class="accordion" id="accordion_card_building">
-    {% for b in buildings %}
-        <div class="card shadow-sm">
+    {% for cat in buildings %}
+        <div class="card ">
+            <h4 class="card-header btn-block text-center btn-link text-decoration-none" onclick="collapse_toggle('collapse_{{ cat }}')">{{ cat }}</h4>
+            <div class="card-body collapse" id="collapse_{{ cat }}">
+        
+        {% for b in buildings[cat] %}
+        {% set buildings = buildings[cat] %}
+            <div class="card my-2 shadow-sm">
 
-            <!-- Head of card -->
-            <div class="card-header shadow">
-                <a onclick="collapse_toggle('{{ buildings[b].name }}_collapse')" role="button" class="btn-block text-decoration-none">
+                <!-- Head of card -->
+                <div class="card-header shadow">
+                    <a onclick="collapse_toggle('{{ buildings[b].name }}_collapse')" role="button" class="btn-block text-decoration-none">
 
-                    <!-- Name and level of building -->
-                    <span class="lead pr-2" style="font-size: 2rem;">
-                        <strong>{{ buildings[b]['name'] }}</strong>
-                    </span>
+                        <!-- Name and level of building -->
+                        <span class="lead pr-2" style="font-size: 2rem;">
+                            <strong>{{ buildings[b]['name'] }}</strong>
+                        </span>
 
-                    <span class="float-right lead mb-0 py-2">
-                        {% for bu in colony.build_now %}
-                            {% if buildings[b]['name'] == colony.build_now[bu]['name'] %}
-                                <span class="badge badge-success">W budowie</span>
-                            {% endif %}
-                        {% endfor %}
-
-                        Poziom: <strong>{{ buildings[b]['level'] }}</strong>
-                    </span>
-                </a>
-            </div>
-
-            <!-- Hidden body of card -->
-            <div class="collapse" id="{{ buildings[b].name }}_collapse">
-                <div class="card-body bg-panel-transparent">
-                    
-                    <!-- Description -->
-                    <div class="card mb-4 px-4 shadow-sm bg-light-transparent">
-                        <h5 class="card-title">Opis:</h5>
-                        <p class="card-text text-break">{{ buildings[b].description }}</p>
-                    </div>
-
-                    <!-- Cost, conditions and production -->
-                    <div class="card-group text-center mb-4 shadow-sm">
-
-                        <!-- Cost -->
-                        <div class="card bg-light-transparent">
-                            <h5 class="card-title">Koszt budowy:</h5>
-                            {% for key in buildings[b]['build_cost'] %}
-                                <li class="card-text">
-                                    <strong>{{ key.capitalize() }}:</strong>
-                                    {{ buildings[b]['build_cost'][key] }}
-                                </li>
+                        <span class="float-right lead mb-0 py-2">
+                            {% for bu in colony.build_now %}
+                                {% if buildings[b]['name'] == colony.build_now[bu]['name'] %}
+                                    <span class="badge badge-success">W budowie</span>
+                                {% endif %}
                             {% endfor %}
-                        </div>
 
-                        <!-- Conditions -->
-                        <div class="card bg-light-transparent">
-                            <h5 class="card-title">Wymagnia:</h5>
-                            {% for key in buildings[b]['build_conditions'] %}
-                                <li class="card-text">
-                                    <strong>{{ key.capitalize() }}:</strong>
-                                    {{ buildings[b]['build_conditions'][key] }}
-                                </li>
-                            {% endfor %}
-                        </div>
+                            Poziom: <strong>{{ buildings[b]['level'] }}</strong>
+                        </span>
+                    </a>
+                </div>
 
-                        <!-- Production -->
-                        <div class="card bg-light-transparent">
-                            <h5 class="card-title">Produkcja:</h5>
-                            {% for key in buildings[b]['production'] %}
-                                <li class="card-text">
-                                    <strong>{{ key.capitalize() }}:</strong>
-                                    {% if 0 > buildings[b]['production'][key] %}
-                                        <span class="text-danger">{{ buildings[b]['production'][key] | round(1) }}</span>
-                                    {% else %}
-                                        <span class="text-success">+{{ buildings[b]['production'][key] | round(1) }}</span>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </div>
-
-                    </div>
-
-                    <!-- Build -->
-                    <div class="container row no-gutters">
-
-                        <!-- Time of build -->
-                        <div class="col">
-                            <strong>Czas budowy:</strong>
-                            <span class="lead align-middle">{{ buildings[b]['build_time'] }}</span>
-                        </div>
+                <!-- Hidden body of card -->
+                <div class="collapse" id="{{ buildings[b].name }}_collapse">
+                    <div class="card-body bg-panel-transparent">
                         
-                        <!-- Build button -->
-                        <div class="col">
-                            {% if buildings[b]['build_allow'] %}
-                                <form method="POST">
-                                    <input name="build" value="{{ buildings[b]['image'][: buildings[b]['image'].rfind('.')] }}" hidden>
-                                    <button type="submit" class="btn btn-block btn-primary shadow">
-                                        {% if buildings[b]['level'] > 1 %}  Rozbuduj
-                                        {% else %}                          Buduj
+                        <!-- Description -->
+                        <div class="card mb-4 px-4 shadow-sm bg-light-transparent">
+                            <h5 class="card-title">Opis:</h5>
+                            <p class="card-text text-break">{{ buildings[b].description }}</p>
+                        </div>
+
+                        <!-- Cost, conditions and production -->
+                        <div class="card-group text-center mb-4 shadow-sm">
+
+                            <!-- Cost -->
+                            <div class="card bg-light-transparent">
+                                <h5 class="card-title">Koszt budowy:</h5>
+                                {% for key in buildings[b]['build_cost'] %}
+                                    <li class="card-text">
+                                        <strong>{{ key.capitalize() }}:</strong>
+                                        {{ buildings[b]['build_cost'][key] }}
+                                    </li>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Conditions -->
+                            <div class="card bg-light-transparent">
+                                <h5 class="card-title">Wymagnia:</h5>
+                                {% for key in buildings[b]['build_conditions'] %}
+                                    <li class="card-text">
+                                        <strong>{{ key.capitalize() }}:</strong>
+                                        {{ buildings[b]['build_conditions'][key] }}
+                                    </li>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Production -->
+                            <div class="card bg-light-transparent">
+                                <h5 class="card-title">Produkcja:</h5>
+                                {% for key in buildings[b]['production'] %}
+                                    <li class="card-text">
+                                        <strong>{{ key.capitalize() }}:</strong>
+                                        {% if 0 > buildings[b]['production'][key] %}
+                                            <span class="text-danger">{{ buildings[b]['production'][key] | round(1) }}</span>
+                                        {% else %}
+                                            <span class="text-success">+{{ buildings[b]['production'][key] | round(1) }}</span>
                                         {% endif %}
-                                    </button>
-                                </form>
-                            {% else %}
-                                
-                                    {% if buildings[b]['build'] %}
-                                    <button type="submit" class="btn btn-block btn-success" disabled>
-                                        W trakcie budowy
-                                    </button>
-                                    {% elif colony.build_now | length >= 3 %}
-                                        <button type="submit" class="btn btn-block btn-danger" disabled>
-                                            Osiągnieto limit kolejki budowania
+                                    </li>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                        <!-- Build -->
+                        <div class="container row no-gutters">
+
+                            <!-- Time of build -->
+                            <div class="col">
+                                <strong>Czas budowy:</strong>
+                                <span class="lead align-middle">{{ buildings[b]['build_time'] }}</span>
+                            </div>
+                            
+                            <!-- Build button -->
+                            <div class="col">
+                                {% if buildings[b]['build_allow'] %}
+                                    <form method="POST">
+                                        <input name="build" value="{{ buildings[b]['image'][: buildings[b]['image'].rfind('.')] }}" hidden>
+                                        <button type="submit" class="btn btn-block btn-primary shadow">
+                                            {% if buildings[b]['level'] > 1 %}  Rozbuduj
+                                            {% else %}                          Buduj
+                                            {% endif %}
                                         </button>
-                                    {% else %}
-                                        <button type="submit" class="btn btn-block btn-danger" disabled>
-                                            Nie spełniono wymagań
+                                    </form>
+                                {% else %}
+                                    
+                                        {% if buildings[b]['build'] %}
+                                        <button type="submit" class="btn btn-block btn-success" disabled>
+                                            W trakcie budowy
                                         </button>
-                                    {% endif %}
-                                
-                            {% endif %}
+                                        {% elif colony.build_now | length >= 3 %}
+                                            <button type="submit" class="btn btn-block btn-danger" disabled>
+                                                Osiągnieto limit kolejki budowania
+                                            </button>
+                                        {% else %}
+                                            <button type="submit" class="btn btn-block btn-danger" disabled>
+                                                Nie spełniono wymagań
+                                            </button>
+                                        {% endif %}
+                                    
+                                {% endif %}
+                            </div>
+
                         </div>
 
                     </div>
-
                 </div>
             </div>
+        {% endfor %}
         </div>
+    </div>
     {% endfor %}
 </div>
 

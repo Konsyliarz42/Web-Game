@@ -144,13 +144,34 @@ class ColonyBuild(Resource):
         messages = update_colony(colony_id)
         colony = get_colonies(colony_id)
         
-
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
         colony_db = Colony.query.filter_by(id=colony_id).first()
         build = [key for key in translate_keys(colony_db.build_now)]
         buildings = get_next_buildings(colony_db.buildings, colony_db.resources, colony_db.build_now)
+        buildings = {
+            'cat_main': {
+                'house': buildings['house'],
+                'sawmill': buildings['sawmill'],
+                'quarry': buildings['quarry'],
+                'barracks': buildings['barracks'],
+                'magazine': buildings['magazine']
+            },
+            'cat_food': {
+                'farm': buildings['farm'],
+                'windmill': buildings['windmill'],
+                'bakery': buildings['bakery'],
+                'fish_hut': buildings['fish_hut']
+            },
+            'cat_advanced': {
+                'mine': buildings['mine'],
+                'ironworks': buildings['ironworks'],
+                'forge': buildings['forge'],
+                'mint': buildings['mint']
+            },
+            'cat_other': {}
+        }
 
         return make_response(render_template('colony_build.html',
             user=get_user(),

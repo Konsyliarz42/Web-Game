@@ -4,7 +4,8 @@ $(function() {
         'production_drewno',
         'production_kamień',
         'production_jedzenie',
-        'build'
+        'build',
+        'Główne'
     ];
     
     setTimeout(toggle_collapse, 500);

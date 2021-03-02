@@ -270,13 +270,13 @@ def bakery(level: int):
     return building_corrects(main_data, file_name)
 
 
-def fishs_hut(level: int):
+def fish_hut(level: int):
     main_data = {
         # Main
         'level': level,
         'name': "Rybak",
         'description': "...",
-        'image': "fishs_hut.png",
+        'image': "fish_hut.png",
         # Production per hour
         'production': {
             'food': 1.2*level,
@@ -295,4 +295,108 @@ def fishs_hut(level: int):
     return building_corrects(main_data, file_name)
 
 # A D V A N C E D   B U I L D I N G S
+
+def mine(level: int):
+    production = {'iron': 3.2*level}
+
+    if level >= 10:
+        production['gold'] = 8.2*level
+
+    main_data = {
+        # Main
+        'level': level,
+        'name': "Kopalnia",
+        'description': "...",
+        'image': "mine.png",
+        # Production per hour
+        'production': production,
+        # Build
+        'build_cost': {
+            'wood': 50*level,
+            'stone': 30*level
+        },
+        'build_conditions': {
+            'house': level,
+            'Ironworks': level - 2
+        }
+    }
+
+    file_name = join(inspect.stack()[0][1], '..', inspect.stack()[0][3] + '_data.json')
+    return building_corrects(main_data, file_name)
+
+
+def ironworks(level: int):
+
+    main_data = {
+        # Main
+        'level': level,
+        'name': "Huta żelaza",
+        'description': "...",
+        'image': "ironworks.png",
+        # Production per hour
+        'production': {'iron': mine(level)['production']['iron']}, # The same like mine
+        # Build
+        'build_cost': {
+            'wood': 100*level,
+            'stone': 300*level
+        },
+        'build_conditions': {
+            'house': level,
+            'mine': level + 1
+        }
+    }
+
+    file_name = join(inspect.stack()[0][1], '..', inspect.stack()[0][3] + '_data.json')
+    return building_corrects(main_data, file_name)
+
+
+def forge(level: int):
+
+    main_data = {
+        # Main
+        'level': level,
+        'name': "Kuźnia",
+        'description': "...",
+        'image': "forge.png",
+        # Production per hour
+        'production': dict(),
+        # Build
+        'build_cost': {
+            'wood': 200*level,
+            'stone': 300*level
+        },
+        'build_conditions': {
+            'house': level,
+            'ironworks': level
+        }
+    }
+
+    file_name = join(inspect.stack()[0][1], '..', inspect.stack()[0][3] + '_data.json')
+    return building_corrects(main_data, file_name)
+
+
+def mint(level: int):
+
+    main_data = {
+        # Main
+        'level': level,
+        'name': "Mennica",
+        'description': "...",
+        'image': "mint.png",
+        # Production per hour
+        'production': {'gold': mine(level + 10)['production']['gold']/2}, # Half value of mine
+        # Build
+        'build_cost': {
+            'wood': 100*level,
+            'stone': 300*level
+        },
+        'build_conditions': {
+            'house': level,
+            'mine': level + 10
+        }
+    }
+
+    file_name = join(inspect.stack()[0][1], '..', inspect.stack()[0][3] + '_data.json')
+    return building_corrects(main_data, file_name)
+
 # O T H E R   B U I L D I N G S
