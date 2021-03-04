@@ -35,7 +35,7 @@ class Home(Resource):
 
         rform = RegisterForm()
         lform = LoginForm()
-        print(request.form, bool(request.form['register']), bool(request.form['login']))
+        #print(request.form, bool(request.form['register']), bool(request.form['login']))
 
         # Register user
         if bool(request.form['register']):
@@ -65,7 +65,7 @@ class Home(Resource):
             user=get_user(),
             registerform=rform,
             loginform=lform
-        ), 401)
+        ), 400)
 
 
 @login_required

@@ -18,6 +18,9 @@ class Check_password(object):
         self.email = form._fields.get(self.email_field)
         self.user = User.query.filter_by(email=self.email.data).first()
 
+        if not self.user:
+            raise ValidationError(self.message)
+
         if not check_password_hash(self.user.password, field.data):
             raise ValidationError(self.message)
 
