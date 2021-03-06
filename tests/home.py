@@ -1,14 +1,4 @@
-from werkzeug.security import generate_password_hash
-from datetime import date
-from flask import request
-
-from . import MyTestCase, app, db, User, Colony
-
-MAIN_TESTER = {
-    'email': "tester@game.com",
-    'password': 'testPassword',
-    'nick': "Tester"
-}
+from . import MyTestCase, db, MAIN_TESTER
 
 class RouteHome(MyTestCase):
 
@@ -17,15 +7,7 @@ class RouteHome(MyTestCase):
 
 
     def setUp(self):
-        super().setUp()
-
-        db.session.add(User(
-            email = MAIN_TESTER['email'],
-            password = generate_password_hash(MAIN_TESTER['password'], 'sha256'),
-            nick = MAIN_TESTER['nick'],
-            created = date.today()
-        ))
-        db.session.commit()
+        return super().setUp()
 
 
     def tearDown(self):

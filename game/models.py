@@ -16,7 +16,7 @@ class User(db.Model, UserMixin):
     colonies = db.relationship('Colony')
     
     def __repr__(self):
-        return f"<User: {self.nick}({self.email}) | id: {id}>"
+        return f"<User: {self.nick}({self.email}) | id: {self.id}>"
 
 
 class Colony(db.Model):

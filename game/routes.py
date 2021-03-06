@@ -86,7 +86,7 @@ class Game(Resource):
     def post(self):
 
         cform = NewColonyForm()
-        code = 401
+        code = 400
 
         # Create colony
         if cform.validate_on_submit():
@@ -103,12 +103,10 @@ class Game(Resource):
             db.session.commit()
 
             cform = NewColonyForm()
-            code = 201
+            code = 303
 
-        return make_response(render_template('game.html',
-            user=get_user(),
-            colonies=get_colonies(),
-            colonyform=cform
+        return make_response(
+            redirect(url_for('game')
         ), code)
 
 
