@@ -5,9 +5,11 @@
             
         <!-- Image of building -->
         <div class="card bg-secondary-transparent" style="max-width: 64px;">
-            <img src="/static/img/{{buildings[b].image}}" alt="{{ buildings[b]['image'] }}">
+            {% if not buildings[b].image_not_exist %}
+                <img src="/static/img/{{buildings[b].image}}" alt="{{ buildings[b]['image'] }}">
+            {% endif %}
         </div>
-
+        
         <h4 class="card card-header bg-light" style="height: 64px;">
             {{ buildings[b]['name'] }}
             <span class="lead">Poziom: {{ buildings[b]['level'] }}</span>

@@ -110,7 +110,7 @@
                                 </div>
 
                                 <!-- Cannel button -->
-                                <form method="POST">
+                                <form method="POST" action="/game/colonies/{{ colony.id }}/build">
                                     <input name="cannel" value="{{ building }}" hidden>
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Anuluj</button>
 
@@ -161,5 +161,17 @@
 
     </div>
 </div>
+
+<div class="card">
+    <div class="card-header">
+         <ul class="nav nav-tabs card-header-tabs">
+            {% for page in colony.pages.values() %}
+                <li class="nav-item">
+                    <a class="nav-link {% if page.active %} active {% endif %}" href="{{ page.href }}">{{ page.text }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+<!-- Not closed -->
 
 {% endblock %}

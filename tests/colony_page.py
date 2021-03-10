@@ -20,7 +20,7 @@ class RouteColonyPage(MyTestCase):
     # Open colony page
     def test_colpage_get(self):
         with patch('game.routes.get_colonies') as mock_colony:
-            mock_colony = dict()
+            mock_colony.return_value = {'pages': {'main': {'activate': False}}}
 
             response = self.client.get("/game/colonies/1")
             self.assertEqual(response.status_code, 200)

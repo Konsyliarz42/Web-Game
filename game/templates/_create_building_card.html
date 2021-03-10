@@ -2,7 +2,7 @@
 
 <div class="accordion" id="accordion_card_building">
     {% for cat in buildings %}
-        <div class="card ">
+        <div class="card collapse-group">
             <h4 class="card-header btn-block text-center btn-link text-decoration-none" onclick="collapse_toggle('collapse_{{ cat }}')">{{ cat }}</h4>
             <div class="card-body collapse" id="collapse_{{ cat }}">
         

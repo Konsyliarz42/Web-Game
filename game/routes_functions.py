@@ -1,8 +1,10 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from flask_login import current_user
 
 from .models import db, User, Colony
-from .buildings.buildings import house, sawmill, quarry, magazine, barracks, farm, windmill, bakery, fish_hut, mine, forge, ironworks, mint
+from .buildings.buildings import get_building
+
+DATETIME_FORMAT = u"%Y-%m-%d %X.%f"
 
 def get_user():
     """The functions returns dictionary with information about current user."""
@@ -47,7 +49,15 @@ def get_colonies(colony_id=None):
                 'food': colony.resources['food'],
                 'gold': colony.resources['gold']
             },
-            'rapports': dict()
+            'rapports': dict(),
+            'pages': {
+                'game': {'href': "/game", 'active': False, 'text': "Powrót do listy kolonii"},
+                'main': {'href': f"/game/colonies/{colony.id}", 'active': False, 'text': "Główne"},
+                'build': {'href': f"/game/colonies/{colony.id}/build", 'active': False, 'text': "Budowanie"},
+                'production': {'href': f"/game/colonies/{colony.id}/production", 'active': False, 'text': "Produkcja"},
+                'map': {'href': f"/game/colonies/{colony.id}/map", 'active': False, 'text': "Mapa"},
+                'rapports': {'href': f"/game/colonies/{colony.id}/rapports", 'active': False, 'text': "Raporty"}
+            }
         }
 
         for dt in colony.rapports:
@@ -103,28 +113,13 @@ def get_next_buildings(colony_buildings, colony_resources, colony_build_now):
         'farm', 'windmill', 'bakery', 'fish_hut',
         'mine', 'ironworks', 'forge', 'mint'
     ]
+    buildings = dict()
 
     for key in keys:
         if key not in colony_buildings.keys():
             colony_buildings[key] = {'level': 0}
 
-    buildings = {
-        'house': house(colony_buildings['house']['level'] + 1),
-        'sawmill': sawmill(colony_buildings['sawmill']['level'] + 1),
-        'quarry': quarry(colony_buildings['quarry']['level'] + 1),
-        'barracks': barracks(colony_buildings['barracks']['level'] + 1),
-        'magazine': magazine(colony_buildings['magazine']['level'] + 1),
-        
-        'farm': farm(colony_buildings['farm']['level'] + 1),
-        'windmill': windmill(colony_buildings['windmill']['level'] + 1),
-        'bakery': bakery(colony_buildings['bakery']['level'] + 1),
-        'fish_hut': fish_hut(colony_buildings['fish_hut']['level'] + 1),
-
-        'mine': mine(colony_buildings['mine']['level'] + 1),
-        'ironworks': ironworks(colony_buildings['ironworks']['level'] + 1),
-        'forge': forge(colony_buildings['forge']['level'] + 1),
-        'mint': mint(colony_buildings['mint']['level'] + 1)
-    }
+        buildings[key] = get_building(name=key, level=colony_buildings[key]['level'] + 1)
 
     for b in buildings:
         conditions = buildings[b]['build_conditions']
@@ -162,79 +157,124 @@ def get_next_buildings(colony_buildings, colony_resources, colony_build_now):
 
 
 def update_colony(colony_id):
-    """Use this function in get method in all colonies' pages!\n
-    The function update data of colony. (adding resources, ending building)"""
+    """The function returns main messages and:
+    - Finish build
+    - Update information about production
+    - Add resources after every 10 minutes
+    - Add rapports of production after minimum one hour from last update"""
 
     colony = Colony.query.filter_by(id=colony_id).first()
-    delete_key = list()
-    messages = {'production': dict(), 'production_main': dict() , 'build': dict()}
+    messages = {
+        'production': dict(),
+        'production_main': dict(),
+        'build': dict(),
+        'hunger': colony.resources['food'][0] < 0
+    }
 
-    # Add resources
-    times = round((datetime.now() - colony.last_harvest).seconds/3600)
-    hunger = False
+    # End of build
+    keys = list()
 
-    if colony.resources['food'][0] < 0:
-        hunger = True
+    for build in colony.build_now:
+        building = colony.build_now[build]
 
-    for resource in colony.resources:
-        production = colony.resources[resource][1]
+        if datetime.strptime(building['build_end'], DATETIME_FORMAT) <= datetime.now():
+            keys.append(build)
 
-        if hunger:
-            production /= 2
+            # Remove trash
+            for key in ['build', 'build_cost', 'build_conditions', 'build_time', 'build_time_dict', 'build_start']:
+                building.pop(key)
 
-        colony.resources[resource][0] += times*production
+            colony.buildings[build] = building
+            messages['build'][build] = building['level']
 
-        if times*production != 0:
-            messages['production'][resource] = times*production
-
-            if resource in ['wood', 'stone', 'food']:
-                messages['production_main'][resource] = messages['production'][resource]
-    
-    if times:
-        print(messages)
-        colony.last_harvest = datetime.now()
-
-    messages['hunger'] = hunger
-
-    # End build
-    for building in colony.build_now.keys():
-        b = colony.build_now[building]
-
-        if datetime.today() >= datetime.strptime(b['build_end'], u"%Y-%m-%d %X.%f"):
-            for r in b['production']:
-                if r not in colony.resources:
-                    colony.resources[r] = [0, b['production'][r]]
-
-                if building in colony.buildings:
-                    res_production = b['production'][r] - colony.buildings[building]['production'][r]
-                    colony.resources[r][1] += res_production
-
-            colony.buildings[building] = b
-            delete_key.append(building)
-            messages['build'][building] = b['level']
-        else:
-            break
-
-    for key in delete_key:
+    for key in keys:
         colony.build_now.pop(key)
 
-    # Add to rapports
-    if messages['production']:
-        data = {datetime.now().__str__(): ('info', translate_keys(messages['production']))}
-
-        for dt in colony.rapports:
-            data[dt] = colony.rapports[dt]
-
-        colony.rapports = data
-
+    # Add build rapport
     if messages['build']:
-        data = {datetime.now().__str__(): ('success', translate_keys(messages['build']))}
+        data = {datetime.now().__str__(): ('success', messages['build'])}
 
         for dt in colony.rapports:
             data[dt] = colony.rapports[dt]
 
         colony.rapports = data
 
+        # Update production
+        production = dict()
+
+        for building in colony.buildings:
+            for resource in colony.buildings[building]['production']:
+                if resource not in production:
+                    production[resource] = list()
+
+                production[resource].append(colony.buildings[building]['production'][resource])
+
+        for resource in production:
+            if resource not in colony.resources:
+                colony.resources[resource] = [0, sum(production[resource])]
+            else:
+                colony.resources[resource][1] = sum(production[resource])
+
+    # Add resources
+    resources = dict()
+
+    if int(((datetime.now() - colony.last_harvest).seconds/60)/10) > 0:
+        upgraded_buildings = [b for b in colony.buildings if datetime.strptime(colony.buildings[b]['build_end'], DATETIME_FORMAT) > colony.last_harvest]
+
+        for b in colony.buildings:
+            upgraded = b in upgraded_buildings
+            building = colony.buildings[b]
+
+            # Add resources before upgraded the buildings
+            if upgraded:
+                building_before = get_building(b, building['level'] - 1)
+                production = building_before['production']
+                times = (datetime.strptime(building['build_end'], DATETIME_FORMAT) - colony.last_harvest).seconds/3600
+
+                for resource in production:
+                    if resource not in resources:
+                        resources[resource] = list()
+
+                    resources[resource].append(production[resource]*times)
+
+                times = (datetime.now() - datetime.strptime(building['build_end'], DATETIME_FORMAT)).seconds/3600
+            else:
+                times = (datetime.now() - colony.last_harvest).seconds/3600
+
+            # Check actual production
+            production = building['production']
+
+            for resource in production:
+                if resource not in resources:
+                    resources[resource] = list()
+
+                resources[resource].append(production[resource]*times)
+
+        # Add resources to database
+        for resource in resources:
+            value = sum(resources[resource])
+
+            # Half production if colony is hunger
+            if messages['hunger']:
+                value /= 2
+
+            colony.resources[resource][0] += value
+
+            if resource in ['wood', 'stone', 'food', 'gold']:
+                messages['production_main'][resource] = value
+
+            # Add rapport if not update for minimum one hour
+            if int((datetime.now() - colony.last_harvest).seconds/3600) > 0:
+                messages['production'][resource] = value
+                data = {datetime.now().__str__(): ('info', messages['production'])}
+
+                for dt in colony.rapports:
+                    data[dt] = colony.rapports[dt]
+
+                colony.rapports = data
+        
+        colony.last_harvest = datetime.now()
+    
     # Save changes
     Colony.query.filter_by(id=colony_id).update({
         'resources': colony.resources,
@@ -245,6 +285,7 @@ def update_colony(colony_id):
     })
     db.session.commit()
 
+    print(messages, colony.last_harvest, sep='\n')
     return messages
 
 

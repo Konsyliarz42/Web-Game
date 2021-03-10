@@ -122,6 +122,7 @@ class ColonyPage(Resource):
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
+        colony['pages']['main']['active'] = True
         colony_db = Colony.query.filter_by(id=colony_id).first()
         build = [key for key in translate_keys(colony_db.build_now)]
         
@@ -145,6 +146,7 @@ class ColonyBuild(Resource):
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
+        colony['pages']['build']['active'] = True
         colony_db = Colony.query.filter_by(id=colony_id).first()
         build = [key for key in translate_keys(colony_db.build_now)]
         buildings = get_next_buildings(colony_db.buildings, colony_db.resources, colony_db.build_now)
@@ -254,6 +256,7 @@ class ColonyProduction(Resource):
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
+        colony['pages']['production']['active'] = True
         colony_db = Colony.query.filter_by(id=colony_id).first()
         build = [key for key in translate_keys(colony_db.build_now)]
         production = dict()
@@ -295,6 +298,7 @@ class ColonyMap(Resource):
         if not colony:
             return make_response("You not have permission to view this page!", 401)
 
+        colony['pages']['map']['active'] = True
         colony_db = Colony.query.filter_by(id=colony_id).first()
         build = [key for key in translate_keys(colony_db.build_now)]
         positions = get_map()
@@ -305,4 +309,29 @@ class ColonyMap(Resource):
             messages=translate_keys(messages),
             build_list=build,
             position=positions
+        ), 200)
+
+
+@login_required
+@api.route('/game/colonies/<int:colony_id>/rapports')
+class ColonyRapports(Resource):
+
+    def get(self, colony_id):
+        messages = update_colony(colony_id)
+        colony = get_colonies(colony_id)
+
+        if not colony:
+            return make_response("You not have permission to view this page!", 401)
+
+        colony['pages']['rapports']['active'] = True
+        colony_db = Colony.query.filter_by(id=colony_id).first()
+        build = [key for key in translate_keys(colony_db.build_now)]
+        rapports = colony_db.rapports
+
+        return make_response(render_template('colony_rapports.html',
+            user=get_user(),
+            colony=translate_keys(colony),
+            messages=translate_keys(messages),
+            build_list=build,
+            rapports=rapports
         ), 200)

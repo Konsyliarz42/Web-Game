@@ -32,7 +32,8 @@ def building_corrects(main_data, file_name):
     """The function is used by functions' buildings to:
     - get data from JSON file
     - set build time
-    - remove non sens conditions"""
+    - remove non sens conditions
+    - add image_not_exist to data if image does not exist in img folder"""
 
     level = main_data['level']
 
@@ -54,6 +55,10 @@ def building_corrects(main_data, file_name):
     # Remove building with negative level or zero level from buildings' conditions
     for building in [building for building in main_data['build_conditions'] if main_data['build_conditions'][building] <= 0]:
         del main_data['build_conditions'][building]
+
+    # Remove image if not exist
+    if not isfile(join(__file__, '..', '..', 'static', 'img', main_data['image'])):
+        main_data['image_not_exist'] = True
 
     return main_data
 
@@ -400,3 +405,39 @@ def mint(level: int):
     return building_corrects(main_data, file_name)
 
 # O T H E R   B U I L D I N G S
+
+# =========================================
+# This function has to always be on bottom!
+# =========================================
+
+def get_building(name, level):
+    """This function returns information about building."""
+
+    if name == 'house':
+        return house(level)
+    elif name == 'sawmill':
+        return sawmill(level)
+    elif name == 'quarry': 
+        return quarry(level)
+    elif name == 'barracks': 
+        return barracks(level)
+    elif name == 'magazine':
+        return magazine(level)
+
+    elif name == 'farm': 
+        return farm(level)
+    elif name == 'windmill': 
+        return windmill(level)
+    elif name == 'bakery':
+        return bakery(level)
+    elif name == 'fish_hut':
+        return fish_hut(level)
+        
+    elif name == 'mine':
+        return mine(level)
+    elif name == 'ironworks': 
+        return ironworks(level)
+    elif name == 'forge': 
+        return forge(level)
+    elif name == 'mint':
+        return mint(level)

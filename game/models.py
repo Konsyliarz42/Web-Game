@@ -53,7 +53,7 @@ class Colony(db.Model):
             # name: [in magazine, production per hour]
             'wood': [1000, 0.0],
             'stone': [1000, 0.0],
-            'food': [1000, 0.5],
+            'food': [1000, 0.0],
             'gold': [100, 0.0]
         }
 

@@ -2,17 +2,7 @@
 
 {% block content %}
 {{ super() }}
-
-<div class="card">
-    <div class="card-header">
-         <ul class="nav nav-tabs card-header-tabs">
-            <li class="nav-item"><a class="nav-link" href="/game">Powrót do listy kolonii</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/game/colonies/{{ colony.id }}">Główne</a></li>
-            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}/build">Budowanie</a></li>
-            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}/production">Produkcja</a></li>
-            <li class="nav-item"><a class="nav-link" href="/game/colonies/{{ colony.id }}/map">Mapa</a></li>
-        </ul>
-    </div>
+<!-- Card's div is opened in colony_base.html -->
 
     <div class="card-body row no-gutters">
 
