@@ -4,9 +4,9 @@
 {{ super() }}
 <!-- Card's div is opened in colony_base.html -->
 
-    {% for datetime in rapports %}
-        <p>{{ datetime }} - {{ rapports[datetime] }}</p>
-    {% endfor %}
-
+    <div class="overflow-auto m-4 rounded-lg shadow" style="height: 512px;">
+        {{ create_message(rapports, true) }}
+    </div>
+    
 </div>
 {% endblock %}

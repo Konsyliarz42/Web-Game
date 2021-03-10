@@ -326,7 +326,7 @@ class ColonyRapports(Resource):
         colony['pages']['rapports']['active'] = True
         colony_db = Colony.query.filter_by(id=colony_id).first()
         build = [key for key in translate_keys(colony_db.build_now)]
-        rapports = colony_db.rapports
+        rapports = translate_keys(colony_db.rapports)
 
         return make_response(render_template('colony_rapports.html',
             user=get_user(),

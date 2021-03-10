@@ -76,32 +76,51 @@ def get_colonies(colony_id=None):
 
 
 def translate_keys(dictionary):
-    """Translate name of resources and buildings."""
+    """Translate words in dictionares."""
 
     result = dict()
-    items_keys = [
+    eng = [
         'cat_main', 'cat_food', 'cat_advanced', 'cat_other', # Categories
-        'wood', 'stone', 'food', 'gold', # Resources
-        'house', 'sawmill', 'quarry', # Buildings
+        'wood', 'stone', 'food', 'gold', 'iron', # Resources
+        'house', 'sawmill', 'quarry', 'barracks', 'magazine', 'farm', 'windmill', 'bakery', 'fish_hut', 'mine', 'ironworks', 'forge', 'mint', # Buildings
         'days', 'hours', 'minutes', 'seconds', # Time
     ]
-    keys = [
+    pol = [
         'Główne', 'Żywność', 'Zaawansowane', 'Pozostałe', # Kategorie
-        'drewno', 'kamień', 'jedzenie', 'złoto', # Zasoby
-        'dom', 'tartak', 'kamieniołom', # Budynki
+        'drewno', 'kamień', 'jedzenie', 'złoto', 'żelazo', # Zasoby
+        'dom', 'tartak', 'kamieniołom', 'koszary', 'magazyn', 'farma', 'młyn', 'piekarnia', 'rybak', 'kopalnia', 'huta', 'kuźnia', 'mennica',  # Budynki
         'dni', 'godziny', 'minuty', 'sekundy', # Czas
     ]
 
     for key in dictionary:
         final_key = key
+        is_list = False
 
         if type(dictionary[key]) == dict:
                 dictionary[key] = translate_keys(dictionary[key])
+        elif type(dictionary[key]) == list:
+            if type(dictionary[key][1]) == dict:
+                is_list = True
+                pol_dict = dict()
 
-        if key in items_keys:
-            final_key = keys[items_keys.index(key)]
+                for k in dictionary[key][1]:
+                    eng_k = k
+
+                    if k in eng:
+                        k = pol[eng.index(k)]
+
+                    pol_dict[k] = dictionary[key][1][eng_k]
+                
+                pol_list = [dictionary[key][0], pol_dict]
+
+
+        if key in eng:
+            final_key = pol[eng.index(key)]
         
-        result[final_key] = dictionary[key]
+        if is_list:
+            result[final_key] = pol_list
+        else:
+            result[final_key] = dictionary[key]
 
     return result
 

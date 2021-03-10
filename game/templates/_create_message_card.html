@@ -1,11 +1,11 @@
-{% macro create_message(rapports) %}
+{% macro create_message(rapports, static=false) %}
 
 <div class="accordion" id="accordion_card_message"></div>
     {% for datetime in rapports %}
         {% set id = datetime[11:].replace(':', '') %}
         {% set id = id.replace('.', '') %}
 
-        <div class="card-group">
+        <div class="card-group {% if static %}mb-4 shadow-sm{% endif %}">
             <h5 class="card card-header bg-{{ rapports[datetime][0] }}-transparent" style="max-width: 192px;">
                 {{ datetime[:-7] }} 
             </h5>
@@ -13,7 +13,7 @@
             <div class="card">
                 <div class="card-header">
                     {% if rapports[datetime][0] == 'info' %}
-                        <a onclick="collapse_toggle('{{ id }}_collapse')" role="button" class="btn-block text-decoration-none">Raport z produkcji</a>
+                        <a {% if not static %} onclick="collapse_toggle('{{ id }}_collapse')" role="button" class="btn-block text-decoration-none" {% endif %}>Raport z produkcji</a>
                     {% elif rapports[datetime][0] == 'success' %}
                         {% for key in rapports[datetime][1] %}
                             <p class="my-0">Zakończono budowę <strong>{{ key.capitalize() }}</strong> na poziom {{ rapports[datetime][1][key] }}</p>
@@ -23,7 +23,7 @@
                 </div>
 
                 {% if rapports[datetime][0] == 'info' %}
-                    <div class="collapse" id="{{ id }}_collapse">
+                    <div class="collapse {% if static %} show {% endif %}" id="{{ id }}_collapse">
                         <ul class="card-body py-0">
                             {% for key in rapports[datetime][1] %}
                                 <li>{{ key.capitalize() }}: {{ rapports[datetime][1][key] | round(1) }}</li>
